@@ -9,8 +9,8 @@
 html {
   background-color: #000;
   color: #fff;
-  -ms-overflow-style: none; /* Internet Explorer */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 html::-webkit-scrollbar {
@@ -28,4 +28,259 @@ body {
 body::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+/* Stickman limb swing animations */
+@keyframes stickman-swing-left {
+  0%, 100% { transform: rotate(-25deg); }
+  50% { transform: rotate(25deg); }
+}
+
+@keyframes stickman-swing-right {
+  0%, 100% { transform: rotate(25deg); }
+  50% { transform: rotate(-25deg); }
+}
+
+.stickman-left-arm {
+  animation: stickman-swing-left 0.4s ease-in-out infinite;
+}
+
+.stickman-right-arm {
+  animation: stickman-swing-right 0.4s ease-in-out infinite;
+}
+
+.stickman-left-leg {
+  animation: stickman-swing-left 0.4s ease-in-out infinite;
+}
+
+.stickman-right-leg {
+  animation: stickman-swing-right 0.4s ease-in-out infinite;
+}
+
+.stickman-upper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  transform-origin: center bottom;
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-bow-left .stickman-upper {
+  transform: rotate(-30deg);
+}
+
+.stickman-bow-right .stickman-upper {
+  transform: rotate(30deg);
+}
+
+/* Running state - faster limb animation */
+.stickman-running .stickman-left-arm,
+.stickman-running .stickman-right-arm,
+.stickman-running .stickman-left-leg,
+.stickman-running .stickman-right-leg {
+  animation-duration: 0.15s;
+}
+
+/* Caught state - hands up pose with legs spread */
+.stickman-caught .stickman-left-arm {
+  animation: none;
+  transform: rotate(-120deg) translateX(-2px);
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-caught .stickman-right-arm {
+  animation: none;
+  transform: rotate(120deg) translateX(2px);
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-caught .stickman-left-leg {
+  animation: none;
+  transform: rotate(-20deg);
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-caught .stickman-right-leg {
+  animation: none;
+  transform: rotate(20deg);
+  transition: transform 0.2s ease-out;
+}
+
+/* Cornered state - defeat hands up pose with legs spread */
+.stickman-cornered .stickman-left-arm {
+  animation: none;
+  transform: rotate(-120deg) translateX(-2px);
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-cornered .stickman-right-arm {
+  animation: none;
+  transform: rotate(120deg) translateX(2px);
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-cornered .stickman-left-leg {
+  animation: none;
+  transform: rotate(-20deg);
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-cornered .stickman-right-leg {
+  animation: none;
+  transform: rotate(20deg);
+  transition: transform 0.2s ease-out;
+}
+
+/* Grateful state - standing still with arms down, legs together */
+.stickman-grateful .stickman-left-arm,
+.stickman-grateful .stickman-right-arm {
+  animation: none !important;
+  transform: rotate(0deg) !important;
+  transition: transform 0.2s ease-out;
+}
+
+.stickman-grateful .stickman-left-leg,
+.stickman-grateful .stickman-right-leg {
+  animation: none !important;
+  transform: rotate(0deg) !important;
+  transition: transform 0.2s ease-out;
+}
+
+/* Fade out animation */
+.stickman-fadeout {
+  animation: stickman-pop 0.5s ease-out forwards;
+}
+
+@keyframes stickman-pop {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* Fade in animation */
+.stickman-fadein {
+  animation: stickman-appear 0.3s ease-out forwards;
+}
+
+@keyframes stickman-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Confetti particle animation */
+.confetti-particle {
+  animation: confetti-burst 0.9s ease-out forwards;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--vx), calc(var(--vy) + 60px)) rotate(var(--rotation));
+  }
+}
+
+/* Speech bubble - base styles */
+.stickman-bubble {
+  position: absolute;
+  top: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stickman-bubble-visible {
+  opacity: 1;
+}
+
+/* Bubble positioned to the right of stickman */
+.stickman-bubble[data-side="right"] {
+  left: calc(100% + 6px);
+}
+
+/* Bubble positioned to the left of stickman */
+.stickman-bubble[data-side="left"] {
+  right: calc(100% + 6px);
+  left: auto;
+}
+
+/* Nub base */
+.stickman-bubble-nub {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+}
+
+/* Nub pointing left (bubble is on right side) */
+.stickman-bubble[data-side="right"] .stickman-bubble-nub {
+  left: -5px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-right: 5px solid rgba(255, 255, 255, 0.95);
+}
+
+/* Nub pointing right (bubble is on left side) */
+.stickman-bubble[data-side="left"] .stickman-bubble-nub {
+  right: -5px;
+  left: auto;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid rgba(255, 255, 255, 0.95);
+}
+
+/* Shadow base styling */
+.stickman-shadow {
+  transition: transform 0.05s ease-out, opacity 0.05s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stickman-left-arm,
+  .stickman-right-arm,
+  .stickman-left-leg,
+  .stickman-right-leg {
+    animation: none;
+  }
+
+  .stickman-fadeout,
+  .stickman-fadein,
+  .confetti-particle {
+    animation: none;
+  }
+
+  .stickman-bubble {
+    transition: none;
+  }
 }
