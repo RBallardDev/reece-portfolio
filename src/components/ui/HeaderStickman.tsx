@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type StickmanState = "walking" | "running" | "cornered" | "caught" | "respawning" | "grateful" | "exiting";
+type LocomotionTransition = "none" | "runStart" | "runStop";
 
 type HeaderStickmanProps = {
   exiting?: boolean;
@@ -17,6 +18,10 @@ const CONFETTI_COLORS = [
 const THANK_MESSAGES = ["Thanks!", "ありがとう"];
 const HEAD_FACE_RIGHT = "50% 12% 12% 50%";
 const HEAD_FACE_LEFT = "12% 50% 50% 12%";
+
+// Easing functions
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
 function spawnConfetti(container: HTMLElement, x: number, y: number) {
   const particleCount = 30 + Math.floor(Math.random() * 15);
@@ -87,6 +92,10 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
   const corneredSideRef = useRef<"left" | "right">("left");
   // Locomotion blend: 0 = walk, 1 = run
   const locomotionBlendRef = useRef(0);
+  // Locomotion transition state
+  const transitionRef = useRef<LocomotionTransition>("none");
+  const transitionStartRef = useRef<number>(0);
+  const prevLocomotionRef = useRef<"walk" | "run">("walk");
 
   useEffect(() => {
     isTouchDevice.current = "ontouchstart" in window || navigator.maxTouchPoints > 0;
@@ -121,6 +130,7 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
 
     // Stop current animation state
     stateRef.current = "exiting";
+    transitionRef.current = "none"; // Cancel any locomotion transition
     figure.classList.remove("stickman-running", "stickman-cornered", "stickman-grateful");
     
     // Hands up pose (same as caught)
@@ -187,7 +197,11 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
     const runLean = 12;          // deeper forward lean
     const walkBounce = 2.0;      // px
     const runBounce = 3.5;       // px - stronger bounce
-    const blendSpeed = 0.008;    // how fast to transition (per ms)
+    const blendSpeed = 0.006;    // slightly slower blend for smoother transition
+
+    // Transition timing
+    const runStartDuration = 300; // ms
+    const runStopDuration = 350;  // ms
 
     // Lerp helper
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -232,8 +246,13 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
       rightLeg.style.transform = "";
     };
 
+    const cancelTransition = () => {
+      transitionRef.current = "none";
+    };
+
     const triggerGratefulSequence = () => {
       stateRef.current = "grateful";
+      cancelTransition();
       figure.classList.remove("stickman-cornered");
       // Add grateful class to stop animations and lower arms
       figure.classList.add("stickman-grateful");
@@ -262,6 +281,10 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
         figure.classList.remove("stickman-bow-left", "stickman-bow-right");
         figure.style.transform = `rotate(0deg) translateY(0px)`;
         stateRef.current = "walking";
+        // Reset locomotion state so he goes straight into walking (no run-to-walk transition)
+        locomotionBlendRef.current = 0;
+        prevLocomotionRef.current = "walk";
+        transitionRef.current = "none";
         releaseStartRef.current = null;
         corneredStartRef.current = null;
       }, gratefulDuration);
@@ -269,6 +292,7 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
 
     const triggerCaughtSequence = () => {
       stateRef.current = "caught";
+      cancelTransition();
       figure.classList.add("stickman-caught");
       figure.classList.remove("stickman-cornered");
       // Clear inline transforms so CSS caught styles apply
@@ -307,6 +331,8 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
         cooldownRef.current = true;
         figure.classList.remove("stickman-running");
         walkPhaseRef.current = 0;
+        locomotionBlendRef.current = 0;
+        prevLocomotionRef.current = "walk";
 
         setTimeout(() => {
           figure.classList.remove("stickman-fadein");
@@ -400,6 +426,7 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
         figure.classList.remove("stickman-cornered");
       } else if (newState === "cornered" && stateRef.current !== "cornered") {
         figure.classList.add("stickman-cornered");
+        cancelTransition();
         // Clear inline transforms so CSS cornered styles apply
         clearLimbTransforms();
         // Flip direction so he walks away from corner when released
@@ -411,9 +438,52 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
       }
       stateRef.current = newState;
 
+      // Determine current locomotion mode
+      const currentLocomotion: "walk" | "run" = newState === "running" ? "run" : "walk";
+      
+      // Detect locomotion changes and trigger transitions
+      if (currentLocomotion !== prevLocomotionRef.current && !isCornered) {
+        if (currentLocomotion === "run" && prevLocomotionRef.current === "walk") {
+          // Walk → Run: start runStart transition
+          transitionRef.current = "runStart";
+          transitionStartRef.current = time;
+        } else if (currentLocomotion === "walk" && prevLocomotionRef.current === "run") {
+          // Run → Walk: start runStop transition
+          transitionRef.current = "runStop";
+          transitionStartRef.current = time;
+        }
+        prevLocomotionRef.current = currentLocomotion;
+      }
+
+      // Calculate transition progress
+      let transitionT = 0;
+      const transition = transitionRef.current;
+      if (transition !== "none") {
+        const elapsed = time - transitionStartRef.current;
+        const duration = transition === "runStart" ? runStartDuration : runStopDuration;
+        transitionT = Math.min(elapsed / duration, 1);
+        
+        if (transitionT >= 1) {
+          transitionRef.current = "none";
+          transitionT = 0;
+        }
+      }
+
       // Move (unless cornered)
       if (!isCornered) {
-        xRef.current += speed * directionRef.current;
+        // Adjust speed during transitions
+        let adjustedSpeed = speed;
+        if (transition === "runStart") {
+          // Accelerate: start slower, ramp up
+          const accelCurve = easeOutCubic(transitionT);
+          adjustedSpeed = lerp(baseSpeed * 1.2, runSpeed, accelCurve);
+        } else if (transition === "runStop") {
+          // Decelerate: start fast, slow down
+          const decelCurve = easeInOutQuad(transitionT);
+          adjustedSpeed = lerp(runSpeed * 0.8, baseSpeed, decelCurve);
+        }
+        
+        xRef.current += adjustedSpeed * directionRef.current;
 
         // Bounce at edges
         if (xRef.current >= maxX) {
@@ -437,11 +507,55 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
       const blend = locomotionBlendRef.current;
 
       // Compute blended animation parameters
-      const freq = lerp(walkFreq, runFreq, blend);
-      const armAmp = lerp(walkArmAmp, runArmAmp, blend);
-      const legAmp = lerp(walkLegAmp, runLegAmp, blend);
+      let freq = lerp(walkFreq, runFreq, blend);
+      let armAmp = lerp(walkArmAmp, runArmAmp, blend);
+      let legAmp = lerp(walkLegAmp, runLegAmp, blend);
       const leanDeg = lerp(walkLean, runLean, blend);
       const maxBounce = lerp(walkBounce, runBounce, blend);
+
+      // Apply transition boosts
+      let transitionBounceOffset = 0;
+      let transitionLeanBoost = 0;
+
+      if (transition === "runStart" && transitionT > 0) {
+        // Run start: overshoot stride, extra lean, push-off dip
+        const t = transitionT;
+        
+        // Stride overshoot: peaks at ~40% then settles
+        const strideOvershoot = Math.sin(t * Math.PI) * 0.18; // 18% overshoot
+        armAmp *= (1 + strideOvershoot);
+        legAmp *= (1 + strideOvershoot);
+        
+        // Extra forward lean during acceleration
+        const leanBoost = Math.sin(t * Math.PI) * 4; // +4deg peak
+        transitionLeanBoost = leanBoost;
+        
+        // Push-off dip: quick down then up
+        const pushOff = Math.sin(t * Math.PI * 2) * 1.5; // oscillate ±1.5px
+        transitionBounceOffset = t < 0.25 ? -pushOff : 0;
+        
+        // Frequency boost for punchy first steps
+        freq *= (1 + (1 - t) * 0.3);
+      } else if (transition === "runStop" && transitionT > 0) {
+        // Run stop: braking lean, stride reduction, skid effect
+        const t = transitionT;
+        
+        // Counter-lean (backward) near the end for braking feel
+        const brakeLean = easeInOutQuad(t) * -3; // up to -3deg backward
+        transitionLeanBoost = brakeLean;
+        
+        // Stride dampening: quickly reduce amplitude
+        const strideDampen = 1 - easeOutCubic(t) * 0.25;
+        armAmp *= strideDampen;
+        legAmp *= strideDampen;
+        
+        // Skid effect: slight forward momentum then settle
+        const skidBounce = Math.sin(t * Math.PI) * 1.2;
+        transitionBounceOffset = skidBounce;
+        
+        // Slow down frequency
+        freq *= (1 - t * 0.2);
+      }
 
       // Update walk phase using blended frequency
       walkPhaseRef.current += dt * freq;
@@ -471,17 +585,18 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
       head.style.borderRadius = headRadius;
 
       // Calculate bounce (sharper dip at contact using abs(sin)^1.5)
-      const bounce = isCornered ? 0 : Math.pow(Math.abs(Math.sin(phase)), 1.5) * maxBounce;
+      const baseBounce = isCornered ? 0 : Math.pow(Math.abs(Math.sin(phase)), 1.5) * maxBounce;
+      const bounce = baseBounce + transitionBounceOffset;
 
-      // Calculate lean
-      const lean = isCornered ? 0 : directionRef.current * leanDeg;
+      // Calculate lean with transition boost
+      const finalLean = isCornered ? 0 : directionRef.current * (leanDeg + transitionLeanBoost);
 
       // Apply transforms
       wrapper.style.transform = `translateX(${xRef.current}px)`;
-      figure.style.transform = `rotate(${lean}deg) translateY(-${bounce}px)`;
+      figure.style.transform = `rotate(${finalLean}deg) translateY(-${Math.max(0, bounce)}px)`;
 
       // Shadow scales inversely with bounce
-      const shadowScale = 1 - (bounce / Math.max(walkBounce, runBounce)) * 0.3;
+      const shadowScale = 1 - (Math.abs(bounce) / Math.max(walkBounce, runBounce)) * 0.3;
       shadow.style.transform = `scaleX(${shadowScale}) scaleY(${shadowScale * 0.6})`;
       shadow.style.opacity = isCornered ? "0.2" : `${0.25 + (1 - shadowScale) * 0.1}`;
 

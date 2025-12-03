@@ -267,14 +267,108 @@ body::-webkit-scrollbar {
     0% {
       transform: translateX(var(--underline-x)) scaleX(1);
     }
-    40% {
+    30% {
       transform: translateX(var(--underline-x)) scaleX(1.15);
     }
-    70% {
+    55% {
       transform: translateX(var(--underline-x)) scaleX(0.95);
+    }
+    80% {
+      transform: translateX(var(--underline-x)) scaleX(1.04);
     }
     100% {
       transform: translateX(var(--underline-x)) scaleX(1);
     }
+  }
+}
+
+/* Interactive Headline - per-character cursor reveal */
+.interactive-headline {
+  outline: none;
+}
+
+.interactive-headline-char {
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  will-change: transform, opacity;
+}
+
+.interactive-headline-char-accent {
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  will-change: transform, opacity;
+  /* Static basket weave pattern */
+  background:
+    /* Horizontal strips layer 1 */
+    repeating-linear-gradient(
+      0deg,
+      #163CE0 0px,
+      #163CE0 6px,
+      #F40A26 6px,
+      #F40A26 12px,
+      transparent 12px,
+      transparent 18px,
+      #FFD20F 18px,
+      #FFD20F 24px
+    ),
+    /* Vertical strips layer 1 */
+    repeating-linear-gradient(
+      90deg,
+      #FF8509 0px,
+      #FF8509 6px,
+      #502B92 6px,
+      #502B92 12px,
+      transparent 12px,
+      transparent 18px,
+      #17A745 18px,
+      #17A745 24px
+    ),
+    /* Offset horizontal strips */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 6px,
+      #F40A26 6px,
+      #F40A26 12px,
+      transparent 12px,
+      transparent 18px,
+      #163CE0 18px,
+      #163CE0 24px
+    ),
+    /* Offset vertical strips */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 6px,
+      #FFD20F 6px,
+      #FFD20F 12px,
+      transparent 12px,
+      transparent 18px,
+      #FF8509 18px,
+      #FF8509 24px
+    );
+  background-size: 24px 24px;
+  background-position: 0 0, 0 0, 6px 6px, 6px 6px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  will-change: transform, opacity;
+}
+
+/* Focus visible ring */
+.interactive-headline:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .interactive-headline {
+    cursor: default;
+  }
+  
+  .interactive-headline-char,
+  .interactive-headline-char-accent {
+    transition: none;
   }
 }
