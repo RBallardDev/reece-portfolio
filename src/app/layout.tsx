@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { neueMontreal } from "./styles/fonts";
 import Header from "@/components/layout/Header";
+import LenisProvider from "@/components/LenisProvider";
 
 export const metadata: Metadata = {
   title: "Reece Ballard",
@@ -16,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={neueMontreal.variable}>
-      <body className="bg-black text-white font-sans antialiased">
+      <body
+        suppressHydrationWarning
+        className="bg-black text-white font-sans antialiased"
+      >
+        <LenisProvider />
         <Header />
         {children}
       </body>
