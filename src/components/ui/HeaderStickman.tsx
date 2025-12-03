@@ -56,6 +56,11 @@ export default function HeaderStickman() {
   const shadowRef = useRef<HTMLDivElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const bubbleTextRef = useRef<HTMLSpanElement>(null);
+  // Limb refs for per-frame transform updates
+  const leftArmRef = useRef<HTMLDivElement>(null);
+  const rightArmRef = useRef<HTMLDivElement>(null);
+  const leftLegRef = useRef<HTMLDivElement>(null);
+  const rightLegRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   // Refs for animation state (no re-renders)
@@ -70,6 +75,8 @@ export default function HeaderStickman() {
   const corneredStartRef = useRef<number | null>(null);
   const releaseStartRef = useRef<number | null>(null);
   const corneredSideRef = useRef<"left" | "right">("left");
+  // Locomotion blend: 0 = walk, 1 = run
+  const locomotionBlendRef = useRef(0);
 
   useEffect(() => {
     isTouchDevice.current = "ontouchstart" in window || navigator.maxTouchPoints > 0;
@@ -100,7 +107,12 @@ export default function HeaderStickman() {
     const shadow = shadowRef.current;
     const bubble = bubbleRef.current;
     const bubbleText = bubbleTextRef.current;
+    const leftArm = leftArmRef.current;
+    const rightArm = rightArmRef.current;
+    const leftLeg = leftLegRef.current;
+    const rightLeg = rightLegRef.current;
     if (!container || !wrapper || !figure || !shadow || !bubble || !bubbleText) return;
+    if (!leftArm || !rightArm || !leftLeg || !rightLeg) return;
 
     // Initialize position
     xRef.current = Math.random() * Math.max(0, container.offsetWidth - 16);
@@ -113,9 +125,23 @@ export default function HeaderStickman() {
     const catchDistance = 20;
     const cornerThreshold = 8;
     const gratefulDuration = 1200;
-    const walkFrequency = 0.012;
-    const leanAngle = 7;
-    const maxBounce = 2.5;
+
+    // Walk vs Run animation parameters
+    const walkFreq = 0.008;      // slower cadence
+    const runFreq = 0.018;       // faster cadence
+    const walkArmAmp = 25;       // degrees - smaller swing
+    const runArmAmp = 50;        // degrees - larger swing
+    const walkLegAmp = 20;       // degrees - smaller stride
+    const runLegAmp = 40;        // degrees - larger stride
+    const walkLean = 7;          // degrees
+    const runLean = 12;          // deeper forward lean
+    const walkBounce = 2.0;      // px
+    const runBounce = 3.5;       // px - stronger bounce
+    const blendSpeed = 0.008;    // how fast to transition (per ms)
+
+    // Lerp helper
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
     let rafId: number;
     let lastTime = performance.now();
 
@@ -148,11 +174,21 @@ export default function HeaderStickman() {
       bubble.classList.remove("stickman-bubble-visible");
     };
 
+    // Clear inline limb transforms so CSS can take over
+    const clearLimbTransforms = () => {
+      leftArm.style.transform = "";
+      rightArm.style.transform = "";
+      leftLeg.style.transform = "";
+      rightLeg.style.transform = "";
+    };
+
     const triggerGratefulSequence = () => {
       stateRef.current = "grateful";
       figure.classList.remove("stickman-cornered");
       // Add grateful class to stop animations and lower arms
       figure.classList.add("stickman-grateful");
+      // Clear inline transforms so CSS grateful styles apply
+      clearLimbTransforms();
       // Show bubble on opposite side of corner (right if trapped left, left if trapped right)
       const bubbleSide = corneredSideRef.current === "left" ? "right" : "left";
       const msg = showBubble(bubbleSide);
@@ -181,7 +217,9 @@ export default function HeaderStickman() {
     const triggerCaughtSequence = () => {
       stateRef.current = "caught";
       figure.classList.add("stickman-caught");
-      figure.classList.remove("stickman-running", "stickman-cornered");
+      figure.classList.remove("stickman-cornered");
+      // Clear inline transforms so CSS caught styles apply
+      clearLimbTransforms();
       hideBubble();
 
       setTimeout(() => {
@@ -304,15 +342,15 @@ export default function HeaderStickman() {
         }
       }
 
-      // Update classes
+      // Update classes (for special states only, not for walk/run animation)
       if (newState === "running" && stateRef.current !== "running") {
-        figure.classList.add("stickman-running");
         figure.classList.remove("stickman-cornered");
       } else if (newState === "cornered" && stateRef.current !== "cornered") {
         figure.classList.add("stickman-cornered");
-        figure.classList.remove("stickman-running");
+        // Clear inline transforms so CSS cornered styles apply
+        clearLimbTransforms();
       } else if (newState === "walking") {
-        figure.classList.remove("stickman-running", "stickman-cornered");
+        figure.classList.remove("stickman-cornered");
       }
       stateRef.current = newState;
 
@@ -330,23 +368,56 @@ export default function HeaderStickman() {
         }
       }
 
-      // Update walk phase
-      const speedFactor = newState === "running" ? 2.5 : 1;
-      walkPhaseRef.current += dt * walkFrequency * speedFactor;
+      // Determine target locomotion blend: 1 for running, 0 for walking
+      const targetBlend = newState === "running" ? 1 : 0;
+      // Ease toward target blend
+      const blendDelta = blendSpeed * dt;
+      if (locomotionBlendRef.current < targetBlend) {
+        locomotionBlendRef.current = Math.min(locomotionBlendRef.current + blendDelta, targetBlend);
+      } else if (locomotionBlendRef.current > targetBlend) {
+        locomotionBlendRef.current = Math.max(locomotionBlendRef.current - blendDelta, targetBlend);
+      }
+      const blend = locomotionBlendRef.current;
 
-      // Calculate bounce (sharper dip at contact)
+      // Compute blended animation parameters
+      const freq = lerp(walkFreq, runFreq, blend);
+      const armAmp = lerp(walkArmAmp, runArmAmp, blend);
+      const legAmp = lerp(walkLegAmp, runLegAmp, blend);
+      const leanDeg = lerp(walkLean, runLean, blend);
+      const maxBounce = lerp(walkBounce, runBounce, blend);
+
+      // Update walk phase using blended frequency
+      walkPhaseRef.current += dt * freq;
       const phase = walkPhaseRef.current;
+
+      // Calculate limb rotations using sine wave
+      // Arms and legs swing opposite to each other (left arm forward = right leg forward)
+      const sinPhase = Math.sin(phase);
+      const leftArmRot = sinPhase * armAmp;
+      const rightArmRot = -sinPhase * armAmp;
+      const leftLegRot = -sinPhase * legAmp;
+      const rightLegRot = sinPhase * legAmp;
+
+      // Apply limb transforms (unless in special state)
+      if (!isCornered) {
+        leftArm.style.transform = `rotate(${leftArmRot}deg)`;
+        rightArm.style.transform = `rotate(${rightArmRot}deg)`;
+        leftLeg.style.transform = `rotate(${leftLegRot}deg)`;
+        rightLeg.style.transform = `rotate(${rightLegRot}deg)`;
+      }
+
+      // Calculate bounce (sharper dip at contact using abs(sin)^1.5)
       const bounce = isCornered ? 0 : Math.pow(Math.abs(Math.sin(phase)), 1.5) * maxBounce;
 
       // Calculate lean
-      const lean = isCornered ? 0 : directionRef.current * leanAngle;
+      const lean = isCornered ? 0 : directionRef.current * leanDeg;
 
       // Apply transforms
       wrapper.style.transform = `translateX(${xRef.current}px)`;
       figure.style.transform = `rotate(${lean}deg) translateY(-${bounce}px)`;
 
       // Shadow scales inversely with bounce
-      const shadowScale = 1 - (bounce / maxBounce) * 0.3;
+      const shadowScale = 1 - (bounce / Math.max(walkBounce, runBounce)) * 0.3;
       shadow.style.transform = `scaleX(${shadowScale}) scaleY(${shadowScale * 0.6})`;
       shadow.style.opacity = isCornered ? "0.2" : `${0.25 + (1 - shadowScale) * 0.1}`;
 
@@ -421,6 +492,7 @@ export default function HeaderStickman() {
             />
             {/* Left arm */}
             <div
+              ref={leftArmRef}
               className="stickman-left-arm absolute bg-white"
               style={{
                 top: "11px",
@@ -433,6 +505,7 @@ export default function HeaderStickman() {
             />
             {/* Right arm */}
             <div
+              ref={rightArmRef}
               className="stickman-right-arm absolute bg-white"
               style={{
                 top: "11px",
@@ -445,6 +518,7 @@ export default function HeaderStickman() {
           </div>
           {/* Left leg */}
           <div
+            ref={leftLegRef}
             className="stickman-left-leg absolute bg-white"
             style={{
               top: "18px",
@@ -457,6 +531,7 @@ export default function HeaderStickman() {
           />
           {/* Right leg */}
           <div
+            ref={rightLegRef}
             className="stickman-right-leg absolute bg-white"
             style={{
               top: "18px",

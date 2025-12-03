@@ -30,31 +30,12 @@ body::-webkit-scrollbar {
   height: 0;
 }
 
-/* Stickman limb swing animations */
-@keyframes stickman-swing-left {
-  0%, 100% { transform: rotate(-25deg); }
-  50% { transform: rotate(25deg); }
-}
-
-@keyframes stickman-swing-right {
-  0%, 100% { transform: rotate(25deg); }
-  50% { transform: rotate(-25deg); }
-}
-
-.stickman-left-arm {
-  animation: stickman-swing-left 0.4s ease-in-out infinite;
-}
-
-.stickman-right-arm {
-  animation: stickman-swing-right 0.4s ease-in-out infinite;
-}
-
-.stickman-left-leg {
-  animation: stickman-swing-left 0.4s ease-in-out infinite;
-}
-
+/* Stickman limb base styles - transforms controlled per-frame in JS */
+.stickman-left-arm,
+.stickman-right-arm,
+.stickman-left-leg,
 .stickman-right-leg {
-  animation: stickman-swing-right 0.4s ease-in-out infinite;
+  /* No CSS animation - transforms set by RAF loop for walk/run blend */
 }
 
 .stickman-upper {
@@ -75,13 +56,7 @@ body::-webkit-scrollbar {
   transform: rotate(30deg);
 }
 
-/* Running state - faster limb animation */
-.stickman-running .stickman-left-arm,
-.stickman-running .stickman-right-arm,
-.stickman-running .stickman-left-leg,
-.stickman-running .stickman-right-leg {
-  animation-duration: 0.15s;
-}
+/* Running state - no CSS override needed, handled by JS blend */
 
 /* Caught state - hands up pose with legs spread */
 .stickman-caught .stickman-left-arm {
@@ -267,13 +242,6 @@ body::-webkit-scrollbar {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stickman-left-arm,
-  .stickman-right-arm,
-  .stickman-left-leg,
-  .stickman-right-leg {
-    animation: none;
-  }
-
   .stickman-fadeout,
   .stickman-fadein,
   .confetti-particle {
