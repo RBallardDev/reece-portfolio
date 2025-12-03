@@ -19,13 +19,23 @@ export default function FitText({
   const textRef = useRef<HTMLSpanElement>(null);
   const [fontSize, setFontSize] = useState(maxFontSize);
 
+  // Scale factor to stretch text to fill width including side bearings
+  const scaleX = 1.08;
+  // Side bearing compensation
+  const sideBearingRatio = 0.04;
+
   useEffect(() => {
     const container = containerRef.current;
     const text = textRef.current;
     if (!container || !text) return;
 
     const calculateFontSize = () => {
-      const containerWidth = container.offsetWidth;
+      // Get viewport width directly for precise calculation
+      const containerWidth = window.innerWidth;
+      
+      // Account for scale in our target width calculation
+      // We need the scaled text to fit, so divide by scale factor
+      const targetWidth = containerWidth / scaleX;
       
       // Binary search for the right font size
       let low = minFontSize;
@@ -41,7 +51,7 @@ export default function FitText({
         const mid = Math.floor((low + high) / 2);
         text.style.fontSize = `${mid}px`;
         
-        if (text.offsetWidth <= containerWidth) {
+        if (text.offsetWidth <= targetWidth) {
           bestFit = mid;
           low = mid + 1;
         } else {
@@ -61,24 +71,27 @@ export default function FitText({
 
     const resizeObserver = new ResizeObserver(calculateFontSize);
     resizeObserver.observe(container);
+    window.addEventListener("resize", calculateFontSize);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", calculateFontSize);
+    };
   }, [children, minFontSize, maxFontSize]);
 
   // Calculate offset to eliminate baseline gap
-  // For uppercase text, we can use a very tight line-height
-  // and shift down slightly to sit on the bottom edge
-  const baselineOffset = fontSize * 0.12; // ~12% of font size for baseline adjustment
+  const baselineOffset = fontSize * 0.12;
+  const sideBearingOffset = fontSize * sideBearingRatio;
 
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-hidden"
+      className="w-screen overflow-hidden"
       style={{ 
         lineHeight: 0, 
         margin: 0, 
         padding: 0,
-        height: `${fontSize * 0.75}px`, // Crop to just the visible cap height
+        height: `${fontSize * 0.75}px`,
       }}
     >
       <span
@@ -90,7 +103,9 @@ export default function FitText({
           lineHeight: 1,
           padding: 0,
           margin: 0,
-          transform: `translateY(-${baselineOffset}px)`,
+          transform: `scaleX(${scaleX}) translateY(-${baselineOffset}px)`,
+          transformOrigin: "left top",
+          marginLeft: `-${sideBearingOffset}px`,
         }}
       >
         {children}

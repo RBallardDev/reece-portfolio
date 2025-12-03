@@ -9,6 +9,8 @@
 html {
   background-color: #000;
   color: #fff;
+  margin: 0;
+  padding: 0;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -21,6 +23,8 @@ html::-webkit-scrollbar {
 body {
   background-color: #000;
   color: #fff;
+  margin: 0;
+  padding: 0;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
