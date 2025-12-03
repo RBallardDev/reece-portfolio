@@ -2,14 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type StickmanState = "walking" | "running" | "cornered" | "caught" | "respawning" | "grateful";
+type StickmanState = "walking" | "running" | "cornered" | "caught" | "respawning" | "grateful" | "exiting";
+
+type HeaderStickmanProps = {
+  exiting?: boolean;
+  onExitComplete?: () => void;
+};
 
 const CONFETTI_COLORS = [
-  "#FF6B6B", "#4ECDC4", "#FFE66D", "#95E1D3",
-  "#F38181", "#AA96DA", "#FCBAD3", "#A8D8EA",
+  "#163CE0", "#FFD20F", "#F6082A",
+  "#FF8509", "#17A745", "#EF9CE2",
 ];
 
 const THANK_MESSAGES = ["Thanks!", "ありがとう"];
+const HEAD_FACE_RIGHT = "50% 12% 12% 50%";
+const HEAD_FACE_LEFT = "12% 50% 50% 12%";
 
 function spawnConfetti(container: HTMLElement, x: number, y: number) {
   const particleCount = 30 + Math.floor(Math.random() * 15);
@@ -49,7 +56,7 @@ function spawnConfetti(container: HTMLElement, x: number, y: number) {
   }, 900);
 }
 
-export default function HeaderStickman() {
+export default function HeaderStickman({ exiting = false, onExitComplete }: HeaderStickmanProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const figureRef = useRef<HTMLDivElement>(null);
@@ -61,7 +68,10 @@ export default function HeaderStickman() {
   const rightArmRef = useRef<HTMLDivElement>(null);
   const leftLegRef = useRef<HTMLDivElement>(null);
   const rightLegRef = useRef<HTMLDivElement>(null);
+  // Head ref for direction-based face
+  const headRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const exitingRef = useRef(false);
 
   // Refs for animation state (no re-renders)
   const stateRef = useRef<StickmanState>("walking");
@@ -98,6 +108,45 @@ export default function HeaderStickman() {
     };
   }, []);
 
+  // Handle exit animation when navigating away
+  useEffect(() => {
+    if (!exiting || exitingRef.current) return;
+    exitingRef.current = true;
+
+    const figure = figureRef.current;
+    if (!figure) {
+      onExitComplete?.();
+      return;
+    }
+
+    // Stop current animation state
+    stateRef.current = "exiting";
+    figure.classList.remove("stickman-running", "stickman-cornered", "stickman-grateful");
+    
+    // Hands up pose (same as caught)
+    figure.classList.add("stickman-caught");
+    
+    // Clear limb transforms
+    const leftArm = leftArmRef.current;
+    const rightArm = rightArmRef.current;
+    const leftLeg = leftLegRef.current;
+    const rightLeg = rightLegRef.current;
+    if (leftArm) leftArm.style.transform = "";
+    if (rightArm) rightArm.style.transform = "";
+    if (leftLeg) leftLeg.style.transform = "";
+    if (rightLeg) rightLeg.style.transform = "";
+
+    // Start fadeout after brief hands-up moment
+    setTimeout(() => {
+      figure.classList.add("stickman-fadeout");
+    }, 150);
+
+    // Complete after fadeout animation
+    setTimeout(() => {
+      onExitComplete?.();
+    }, 650);
+  }, [exiting, onExitComplete]);
+
   useEffect(() => {
     if (!visible) return;
 
@@ -111,8 +160,9 @@ export default function HeaderStickman() {
     const rightArm = rightArmRef.current;
     const leftLeg = leftLegRef.current;
     const rightLeg = rightLegRef.current;
+    const head = headRef.current;
     if (!container || !wrapper || !figure || !shadow || !bubble || !bubbleText) return;
-    if (!leftArm || !rightArm || !leftLeg || !rightLeg) return;
+    if (!leftArm || !rightArm || !leftLeg || !rightLeg || !head) return;
 
     // Initialize position
     xRef.current = Math.random() * Math.max(0, container.offsetWidth - 16);
@@ -197,6 +247,9 @@ export default function HeaderStickman() {
       figure.style.transform = `rotate(0deg) translateY(0px)`;
       figure.classList.remove("stickman-bow-left", "stickman-bow-right");
 
+      // Face toward the bubble
+      head.style.borderRadius = bubbleSide === "right" ? HEAD_FACE_RIGHT : HEAD_FACE_LEFT;
+
       // If Japanese message, bow toward the bubble using upper-body class
       if (msg === "ありがとう") {
         const bowClass = bubbleSide === "right" ? "stickman-bow-right" : "stickman-bow-left";
@@ -232,7 +285,7 @@ export default function HeaderStickman() {
 
       setTimeout(() => {
         figure.classList.add("stickman-fadeout");
-      }, 1000);
+      }, 600);
 
       setTimeout(() => {
         stateRef.current = "respawning";
@@ -245,7 +298,7 @@ export default function HeaderStickman() {
         wrapper.style.transform = `translateX(${xRef.current}px)`;
         figure.style.transform = `rotate(0deg) translateY(0px)`;
         shadow.style.transform = `scaleX(1) scaleY(1)`;
-      }, 1500);
+      }, 1900);
 
       setTimeout(() => {
         figure.style.opacity = "1";
@@ -262,7 +315,7 @@ export default function HeaderStickman() {
         setTimeout(() => {
           cooldownRef.current = false;
         }, 1500);
-      }, 1700);
+      }, 2300);
     };
 
     const animate = (time: number) => {
@@ -270,7 +323,7 @@ export default function HeaderStickman() {
       lastTime = time;
 
       const state = stateRef.current;
-      if (state === "caught" || state === "respawning" || state === "grateful") {
+      if (state === "caught" || state === "respawning" || state === "grateful" || state === "exiting") {
         // Don't update transforms for these states - they're handled elsewhere
         rafId = requestAnimationFrame(animate);
         return;
@@ -349,6 +402,10 @@ export default function HeaderStickman() {
         figure.classList.add("stickman-cornered");
         // Clear inline transforms so CSS cornered styles apply
         clearLimbTransforms();
+        // Flip direction so he walks away from corner when released
+        directionRef.current = corneredSideRef.current === "left" ? 1 : -1;
+        // Update head to face away from corner
+        head.style.borderRadius = directionRef.current === 1 ? HEAD_FACE_RIGHT : HEAD_FACE_LEFT;
       } else if (newState === "walking") {
         figure.classList.remove("stickman-cornered");
       }
@@ -405,6 +462,13 @@ export default function HeaderStickman() {
         leftLeg.style.transform = `rotate(${leftLegRot}deg)`;
         rightLeg.style.transform = `rotate(${rightLegRot}deg)`;
       }
+
+      // Update head shape to show face direction (flat side = face)
+      // Direction 1 = moving right, flat on right; Direction -1 = moving left, flat on left
+      const headRadius = directionRef.current === 1
+        ? HEAD_FACE_RIGHT  // flat right (face right)
+        : HEAD_FACE_LEFT; // flat left (face left)
+      head.style.borderRadius = headRadius;
 
       // Calculate bounce (sharper dip at contact using abs(sin)^1.5)
       const bounce = isCornered ? 0 : Math.pow(Math.abs(Math.sin(phase)), 1.5) * maxBounce;
@@ -467,9 +531,10 @@ export default function HeaderStickman() {
           style={{ transformOrigin: "center bottom" }}
         >
           <div className="stickman-upper">
-            {/* Head */}
+            {/* Head - D-shaped with flat side as face */}
             <div
-              className="absolute rounded-full"
+              ref={headRef}
+              className="absolute"
               style={{
                 top: 0,
                 left: "50%",
@@ -477,6 +542,7 @@ export default function HeaderStickman() {
                 width: "8px",
                 height: "8px",
                 border: "2px solid rgba(255,255,255,1)",
+                borderRadius: "50%", // Initial, will be updated by JS
               }}
             />
             {/* Body */}

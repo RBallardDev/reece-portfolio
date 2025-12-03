@@ -1,8 +1,10 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import NavUnderline from "@/components/ui/NavUnderline";
 
 type TabConfig = {
   label: string;
@@ -25,15 +27,17 @@ const tabs: TabConfig[] = [
 
 export default function NavTabs() {
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
 
   return (
-    <nav className="flex items-center gap-6 text-base">
+    <nav ref={navRef} className="relative flex items-center gap-6 text-base pb-2">
       {tabs.map((tab) => {
         const isActive = pathname === tab.href;
         return (
           <Link
             key={tab.href}
             href={tab.href}
+            data-nav-item
             className={[
               "font-semibold",
               isActive
@@ -47,7 +51,7 @@ export default function NavTabs() {
           </Link>
         );
       })}
+      <NavUnderline containerRef={navRef} />
     </nav>
   );
 }
-
