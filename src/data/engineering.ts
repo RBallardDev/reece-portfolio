@@ -48,6 +48,7 @@ export type Experience = {
   org?: string;
   role: string;
   previousRole?: string; // For showing promotion history
+  coverImage?: string; // Optional cover image path
   timeframe?: string;
   summary: string;
   skillIds: string[];
@@ -319,6 +320,7 @@ const experiences: Experience[] = [
     org: "WeBeGiggin'",
     role: "Full-Stack Engineer",
     previousRole: "Full-Stack & Project Management Intern",
+    coverImage: "/images/experiences/wbg/cover.png",
     timeframe: "2023 – Present",
     summary: "Led development of web and mobile platforms serving thousands of users.",
     skillIds: [
@@ -349,6 +351,7 @@ const experiences: Experience[] = [
     title: "Enact Insight",
     org: "Enact Insight",
     role: "Software Engineering Intern",
+    coverImage: "/images/experiences/enact/cover2.png",
     timeframe: "2022 – 2023",
     summary: "Built scalable backend systems and contributed to core product features.",
     skillIds: ["python", "django", "postgresql", "sql", "rest-apis", "docker", "git"],
@@ -366,6 +369,7 @@ const experiences: Experience[] = [
     org: "Open Planner",
     role: "Lead Software Engineer",
     previousRole: "Software Engineer",
+    coverImage: "/images/experiences/op/cover.png",
     timeframe: "2022 – Present",
     summary: "Created and launched a productivity tool from concept to market.",
     skillIds: [

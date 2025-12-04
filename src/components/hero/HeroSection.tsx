@@ -1,4 +1,16 @@
+"use client";
+
 import InteractiveHeadline from "./InteractiveHeadline";
+import dynamic from "next/dynamic";
+
+const HeroModelPreview = dynamic(() => import("./HeroModelPreview"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full aspect-square max-w-md rounded-2xl border border-white/10 flex items-center justify-center text-white/40 text-sm">
+      Loading…
+    </div>
+  ),
+});
 
 export default function HeroSection() {
   return (
@@ -17,11 +29,9 @@ export default function HeroSection() {
         </p>
       </div>
 
-      {/* Right: 3D placeholder */}
+      {/* Right: 3D preview */}
       <div className="flex items-center justify-center">
-        <div className="w-full aspect-square max-w-md rounded-2xl border border-white/10 flex items-center justify-center text-white/40 text-sm">
-          3D Render Placeholder
-        </div>
+        <HeroModelPreview />
       </div>
     </section>
   );

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 type EngineeringCardProps = {
   title: string;
   type: string;
   previousType?: string; // For showing promotion (previous role)
+  coverImage?: string;
   summary: string;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
@@ -16,6 +18,7 @@ export default function EngineeringCard({
   title,
   type,
   previousType,
+  coverImage,
   summary,
   onHoverStart,
   onHoverEnd,
@@ -41,9 +44,23 @@ export default function EngineeringCard({
       }}
       role="button"
     >
-      {/* Image placeholder */}
-      <div className="aspect-video w-full rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/30 text-xs mb-4">
-        Image placeholder
+      {/* Cover image (optional) - flush with card edges */}
+      <div className="relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl bg-white/5 aspect-[16/9] sm:aspect-[4/3]">
+        {coverImage ? (
+          <Image
+            src={coverImage}
+            alt={`${title} cover`}
+            width={800}
+            height={450}
+            className="w-full h-full object-cover"
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            priority={false}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
+            Image placeholder
+          </div>
+        )}
       </div>
       
       {/* Type label with optional promotion arrow */}
