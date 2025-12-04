@@ -44,14 +44,14 @@ export default function InteractiveHeadline({
         // Calculate lift based on distance (closer = more lift)
         const intensity = 1 - (distance / revealRadius);
         const lift = intensity * liftAmount;
-        const fadeStrength = Math.pow(intensity, 0.55); // widen fade so edges drop opacity
-        const accentStrength = Math.pow(intensity, 0.8);
         
         charEl.style.transform = `translateY(-${lift}px)`;
-        charEl.style.opacity = `${Math.max(0, 1 - fadeStrength * 1.05)}`;
+        // White text goes fully transparent when in radius
+        charEl.style.opacity = "0";
         
         if (accentEl) {
-          accentEl.style.opacity = `${accentStrength}`;
+          // Accent goes fully opaque when in radius
+          accentEl.style.opacity = "1";
           accentEl.style.transform = `translateY(-${lift}px)`; // Move with the character
         }
       } else {

@@ -1,6 +1,7 @@
 import HeroSection from "@/components/hero/HeroSection";
 import SummaryGrid from "@/components/sections/SummaryGrid";
-import FitText from "@/components/ui/FitText";
+import ContactDock from "@/components/home/ContactDock";
+import SparkleWordmark from "@/components/home/SparkleWordmark";
 
 export default function Home() {
   return (
@@ -10,11 +11,13 @@ export default function Home() {
         <SummaryGrid />
       </main>
 
-      {/* Footer text - full viewport width, padding above, centered */}
+      {/* Footer area - Contact dock + wordmark */}
       <footer className="pt-32 w-screen">
-        <FitText className="font-bold tracking-tight uppercase text-white/90">
-          RBALLAR<span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>D</span>DEV
-        </FitText>
+        {/* Contact dock - text links above wordmark */}
+        <ContactDock />
+        
+        {/* Wordmark - full width with sparkles on hover */}
+        <SparkleWordmark />
       </footer>
     </div>
   );

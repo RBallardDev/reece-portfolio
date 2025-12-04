@@ -376,3 +376,26 @@ body::-webkit-scrollbar {
     transition: none;
   }
 }
+
+/* Contact sparkle particle animation */
+.contact-sparkle {
+  animation: contact-sparkle-burst 0.7s ease-out forwards;
+}
+
+@keyframes contact-sparkle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sparkle-vx), var(--sparkle-vy)) scale(0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-sparkle {
+    animation: none;
+    opacity: 0;
+  }
+}
