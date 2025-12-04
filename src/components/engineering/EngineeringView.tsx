@@ -3,8 +3,14 @@
 import { useState, useCallback } from "react";
 import SkillPills from "./SkillPills";
 import EngineeringGrid from "./EngineeringGrid";
+import ProjectDetail from "./ProjectDetail";
 
 type ToggleMode = "projects" | "experience" | "map";
+
+type SelectedItem = {
+  id: string;
+  type: "project" | "experience";
+} | null;
 
 const HIGHLIGHT_PALETTE = [
   "#163CE0",
@@ -32,6 +38,7 @@ export default function EngineeringView() {
   const [skillsExpanded, setSkillsExpanded] = useState(false);
   const [activeSkillIds, setActiveSkillIds] = useState<string[] | null>(null);
   const [activeSkillColors, setActiveSkillColors] = useState<Record<string, string>>({});
+  const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
 
   const handleCardHoverStart = useCallback((skillIds: string[]) => {
     if (skillIds.length > 0) {
@@ -43,6 +50,14 @@ export default function EngineeringView() {
   const handleCardHoverEnd = useCallback(() => {
     setActiveSkillIds(null);
     setActiveSkillColors({});
+  }, []);
+
+  const handleCardClick = useCallback((id: string, type: "project" | "experience") => {
+    setSelectedItem({ id, type });
+  }, []);
+
+  const handleBackToGrid = useCallback(() => {
+    setSelectedItem(null);
   }, []);
 
   const toggleButtons: { key: ToggleMode; label: string }[] = [
@@ -62,7 +77,10 @@ export default function EngineeringView() {
             {toggleButtons.map((btn) => (
               <button
                 key={btn.key}
-                onClick={() => setMode(btn.key)}
+                onClick={() => {
+                  setMode(btn.key);
+                  setSelectedItem(null);
+                }}
                 className={`text-sm font-medium transition-colors ${
                   mode === btn.key
                     ? "text-white"
@@ -118,7 +136,10 @@ export default function EngineeringView() {
         {toggleButtons.map((btn) => (
           <button
             key={btn.key}
-            onClick={() => setMode(btn.key)}
+            onClick={() => {
+              setMode(btn.key);
+              setSelectedItem(null);
+            }}
             className={`text-sm font-medium transition-colors ${
               mode === btn.key
                 ? "text-white"
@@ -130,13 +151,22 @@ export default function EngineeringView() {
         ))}
       </div>
 
-      {/* Mobile: grid (normal page scroll) */}
+      {/* Mobile: grid or detail (normal page scroll) */}
       <div className="md:hidden">
-        <EngineeringGrid
-          mode={mode}
-          onCardHoverStart={handleCardHoverStart}
-          onCardHoverEnd={handleCardHoverEnd}
-        />
+        {selectedItem ? (
+          <ProjectDetail
+            id={selectedItem.id}
+            type={selectedItem.type}
+            onBack={handleBackToGrid}
+          />
+        ) : (
+          <EngineeringGrid
+            mode={mode}
+            onCardHoverStart={handleCardHoverStart}
+            onCardHoverEnd={handleCardHoverEnd}
+            onCardClick={handleCardClick}
+          />
+        )}
       </div>
 
       {/* Desktop: Split layout with sticky left + scrollable right */}
@@ -155,7 +185,7 @@ export default function EngineeringView() {
           </div>
         </div>
 
-        {/* Right column - Toggle + Grid */}
+        {/* Right column - Toggle + Grid/Detail */}
         <div>
           {/* Toggle row - sticky, aligned with left column */}
           <div className="sticky top-24 z-10 -mx-6 px-6 before:absolute before:inset-x-0 before:bottom-full before:h-screen before:bg-black">
@@ -164,7 +194,10 @@ export default function EngineeringView() {
               {toggleButtons.map((btn) => (
                 <button
                   key={btn.key}
-                  onClick={() => setMode(btn.key)}
+                  onClick={() => {
+                    setMode(btn.key);
+                    setSelectedItem(null);
+                  }}
                   className={`text-sm font-medium transition-colors ${
                     mode === btn.key
                       ? "text-white"
@@ -178,13 +211,22 @@ export default function EngineeringView() {
             </div>
           </div>
 
-          {/* Grid - with top margin to account for sticky toggle */}
+          {/* Grid or Detail - with top margin to account for sticky toggle */}
           <div className="mt-6">
-            <EngineeringGrid
-              mode={mode}
-              onCardHoverStart={handleCardHoverStart}
-              onCardHoverEnd={handleCardHoverEnd}
-            />
+            {selectedItem ? (
+              <ProjectDetail
+                id={selectedItem.id}
+                type={selectedItem.type}
+                onBack={handleBackToGrid}
+              />
+            ) : (
+              <EngineeringGrid
+                mode={mode}
+                onCardHoverStart={handleCardHoverStart}
+                onCardHoverEnd={handleCardHoverEnd}
+                onCardClick={handleCardClick}
+              />
+            )}
           </div>
         </div>
       </div>
