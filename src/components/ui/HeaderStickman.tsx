@@ -209,11 +209,20 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
     let rafId: number;
     let lastTime = performance.now();
 
-    const handlePointerMove = (e: PointerEvent) => {
+    const updateCursorPosition = (e: PointerEvent) => {
       if (isTouchDevice.current) return;
       const rect = container.getBoundingClientRect();
       cursorXRef.current = e.clientX - rect.left;
       cursorYRef.current = e.clientY - rect.top;
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      updateCursorPosition(e);
+    };
+
+    const handlePointerEnter = (e: PointerEvent) => {
+      // Capture position when pointer enters (handles case where cursor is stationary after respawn)
+      updateCursorPosition(e);
     };
 
     const handlePointerLeave = () => {
@@ -222,6 +231,7 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
     };
 
     container.addEventListener("pointermove", handlePointerMove);
+    container.addEventListener("pointerenter", handlePointerEnter);
     container.addEventListener("pointerleave", handlePointerLeave);
 
     const showBubble = (side: "left" | "right"): string => {
@@ -608,6 +618,7 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
     return () => {
       cancelAnimationFrame(rafId);
       container.removeEventListener("pointermove", handlePointerMove);
+      container.removeEventListener("pointerenter", handlePointerEnter);
       container.removeEventListener("pointerleave", handlePointerLeave);
     };
   }, [visible]);
