@@ -1,5 +1,5 @@
 import EngineeringCard from "./EngineeringCard";
-import { projects, experienceEntries } from "./data";
+import { projects, experiences } from "@/data/engineering";
 
 type EngineeringGridProps = {
   mode: "projects" | "experience";
@@ -14,27 +14,37 @@ export default function EngineeringGrid({
   onCardHoverEnd,
   onCardClick,
 }: EngineeringGridProps) {
-  const data = mode === "projects" ? projects : experienceEntries;
+  if (mode === "projects") {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {projects.map((project) => (
+          <EngineeringCard
+            key={project.id}
+            title={project.title}
+            type={project.category}
+            summary={project.summary}
+            onHoverStart={() => onCardHoverStart?.(project.skillIds)}
+            onHoverEnd={onCardHoverEnd}
+            onClick={() => onCardClick?.(project.id, "project")}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {data.map((item) => {
-        // Projects have skillIds and id, experience entries don't
-        const skillIds = "skillIds" in item ? item.skillIds : [];
-        const itemId = "id" in item ? item.id : item.title.toLowerCase().replace(/\s+/g, "-");
-
-        return (
-          <EngineeringCard
-            key={item.title}
-            title={item.title}
-            type={item.type}
-            summary={item.summary}
-            onHoverStart={() => onCardHoverStart?.(skillIds)}
-            onHoverEnd={onCardHoverEnd}
-            onClick={() => onCardClick?.(itemId, mode === "projects" ? "project" : "experience")}
-          />
-        );
-      })}
+      {experiences.map((experience) => (
+        <EngineeringCard
+          key={experience.id}
+          title={experience.title}
+          type={experience.role}
+          summary={experience.summary}
+          onHoverStart={() => onCardHoverStart?.(experience.skillIds)}
+          onHoverEnd={onCardHoverEnd}
+          onClick={() => onCardClick?.(experience.id, "experience")}
+        />
+      ))}
     </div>
   );
 }

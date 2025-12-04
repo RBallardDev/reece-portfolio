@@ -1,4 +1,4 @@
-import { skills } from "./data";
+import { skills } from "@/data/engineering";
 
 type SkillPillsProps = {
   activeSkillIds?: string[] | null;

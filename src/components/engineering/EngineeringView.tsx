@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import SkillPills from "./SkillPills";
 import EngineeringGrid from "./EngineeringGrid";
 import ProjectDetail from "./ProjectDetail";
+import MapView from "./MapView";
 
 type ToggleMode = "projects" | "experience" | "map";
 
@@ -60,6 +61,10 @@ export default function EngineeringView() {
     setSelectedItem(null);
   }, []);
 
+  const handleMapOpenItem = useCallback((kind: "experience" | "project", id: string) => {
+    setSelectedItem({ id, type: kind });
+  }, []);
+
   const toggleButtons: { key: ToggleMode; label: string }[] = [
     { key: "projects", label: "[Projects]" },
     { key: "experience", label: "[Experience]" },
@@ -68,10 +73,46 @@ export default function EngineeringView() {
 
   // Map view - full width layout
   if (mode === "map") {
+    // If an item is selected from the map, show detail view
+    if (selectedItem) {
+      return (
+        <div className="max-w-7xl mx-auto">
+          {/* Header row with title and toggles */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <h1 className="text-4xl font-bold">Engineering</h1>
+            <div className="flex items-center gap-4">
+              {toggleButtons.map((btn) => (
+                <button
+                  key={btn.key}
+                  onClick={() => {
+                    setMode(btn.key);
+                    setSelectedItem(null);
+                  }}
+                  className={`text-sm font-medium transition-colors ${
+                    mode === btn.key
+                      ? "text-white"
+                      : "text-white/60 hover:text-white/90"
+                  }`}
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <ProjectDetail
+            id={selectedItem.id}
+            type={selectedItem.type}
+            onBack={handleBackToGrid}
+          />
+        </div>
+      );
+    }
+
     return (
-      <div className="space-y-8 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header row with title and toggles */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <h1 className="text-4xl font-bold">Engineering</h1>
           <div className="flex items-center gap-4">
             {toggleButtons.map((btn) => (
@@ -93,13 +134,8 @@ export default function EngineeringView() {
           </div>
         </div>
 
-        {/* Map placeholder - full width */}
-        <div className="w-full aspect-[16/9] rounded-xl border border-white/10 bg-white/5 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-white/40 text-lg mb-2">Relationship Map</p>
-            <p className="text-white/30 text-sm">Coming soon — interactive visualization of project connections</p>
-          </div>
-        </div>
+        {/* Map view */}
+        <MapView onOpenItem={handleMapOpenItem} />
       </div>
     );
   }
@@ -132,7 +168,7 @@ export default function EngineeringView() {
       <h1 className="text-4xl font-bold md:hidden mt-6 mb-4">Engineering</h1>
 
       {/* Mobile toggle row */}
-      <div className="flex items-center gap-4 md:hidden mb-6">
+      <div className="flex items-center justify-end gap-4 md:hidden mb-6">
         {toggleButtons.map((btn) => (
           <button
             key={btn.key}
@@ -190,7 +226,7 @@ export default function EngineeringView() {
           {/* Toggle row - sticky, aligned with left column */}
           <div className="sticky top-24 z-10 -mx-6 px-6 before:absolute before:inset-x-0 before:bottom-full before:h-screen before:bg-black">
             <div className="bg-black pt-2.5 pb-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-end gap-4">
               {toggleButtons.map((btn) => (
                 <button
                   key={btn.key}
