@@ -9,11 +9,11 @@ export default function HeroSection() {
           Software Engineer &amp; Creative
         </p>
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-          <InteractiveHeadline text="I build digital worlds." />
+          <InteractiveHeadline text="Doing what I love: building and shipping software." />
         </h1>
         <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-md">
-          Multi-disciplinary developer blending code, design, and 3D to craft
-          immersive experiences—from polished web apps to interactive visuals.
+          Web + mobile apps, UI systems, and the occasional ML or 3D experiment.
+          If it's fun, I'll probably ship it.
         </p>
       </div>
 

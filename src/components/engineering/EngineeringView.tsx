@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import SkillPills from "./SkillPills";
 import EngineeringGrid from "./EngineeringGrid";
 import ProjectDetail from "./ProjectDetail";
 import MapView from "./MapView";
+import { engineeringData } from "@/data/engineering";
 
 type ToggleMode = "projects" | "experience" | "map";
 
@@ -34,12 +36,38 @@ function generateSkillColors(skillIds: string[]): Record<string, string> {
   return colors;
 }
 
+// Helper to resolve open param to selected item
+function resolveOpenParam(openSlug: string | null): SelectedItem {
+  if (!openSlug) return null;
+
+  // Find project by slug
+  const project = engineeringData.projects.find((p) => p.slug === openSlug);
+  if (project) {
+    return { id: project.id, type: "project" };
+  }
+
+  // Fallback: check experience by slug
+  const experience = engineeringData.experiences.find((e) => e.slug === openSlug);
+  if (experience) {
+    return { id: experience.id, type: "experience" };
+  }
+
+  return null;
+}
+
 export default function EngineeringView() {
+  const searchParams = useSearchParams();
+  
+  // Compute initial selected item from URL param
+  const initialSelectedItem = useMemo(() => {
+    return resolveOpenParam(searchParams.get("open"));
+  }, [searchParams]);
+
   const [mode, setMode] = useState<ToggleMode>("projects");
   const [skillsExpanded, setSkillsExpanded] = useState(false);
   const [activeSkillIds, setActiveSkillIds] = useState<string[] | null>(null);
   const [activeSkillColors, setActiveSkillColors] = useState<Record<string, string>>({});
-  const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
+  const [selectedItem, setSelectedItem] = useState<SelectedItem>(initialSelectedItem);
 
   const handleCardHoverStart = useCallback((skillIds: string[]) => {
     if (skillIds.length > 0) {

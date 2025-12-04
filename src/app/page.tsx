@@ -1,5 +1,6 @@
 import HeroSection from "@/components/hero/HeroSection";
 import SummaryGrid from "@/components/sections/SummaryGrid";
+import FeaturedWorkRow from "@/components/home/FeaturedWorkRow";
 import ContactDock from "@/components/home/ContactDock";
 import SparkleWordmark from "@/components/home/SparkleWordmark";
 
@@ -9,6 +10,7 @@ export default function Home() {
       <main className="flex-1 pt-24 px-6 max-w-6xl mx-auto w-full space-y-20">
         <HeroSection />
         <SummaryGrid />
+        <FeaturedWorkRow />
       </main>
 
       {/* Footer area - Contact dock + wordmark */}
