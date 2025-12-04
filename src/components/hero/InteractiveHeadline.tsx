@@ -200,7 +200,7 @@ export default function InteractiveHeadline({
       {/* Custom circular cursor */}
       <span
         ref={cursorRef}
-        className="pointer-events-none absolute rounded-full border-2 border-white/30"
+        className="pointer-events-none absolute rounded-full"
         style={{
           width: revealRadius * 2,
           height: revealRadius * 2,

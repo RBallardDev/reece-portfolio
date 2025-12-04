@@ -19,11 +19,6 @@ export default function FitText({
   const textRef = useRef<HTMLSpanElement>(null);
   const [fontSize, setFontSize] = useState(maxFontSize);
 
-  // Scale factor to stretch text to fill width including side bearings
-  const scaleX = 1.08;
-  // Side bearing compensation
-  const sideBearingRatio = 0.04;
-
   useEffect(() => {
     const container = containerRef.current;
     const text = textRef.current;
@@ -32,10 +27,6 @@ export default function FitText({
     const calculateFontSize = () => {
       // Get viewport width directly for precise calculation
       const containerWidth = window.innerWidth;
-      
-      // Account for scale in our target width calculation
-      // We need the scaled text to fit, so divide by scale factor
-      const targetWidth = containerWidth / scaleX;
       
       // Binary search for the right font size
       let low = minFontSize;
@@ -51,7 +42,7 @@ export default function FitText({
         const mid = Math.floor((low + high) / 2);
         text.style.fontSize = `${mid}px`;
         
-        if (text.offsetWidth <= targetWidth) {
+        if (text.offsetWidth <= containerWidth) {
           bestFit = mid;
           low = mid + 1;
         } else {
@@ -69,19 +60,15 @@ export default function FitText({
 
     calculateFontSize();
 
-    const resizeObserver = new ResizeObserver(calculateFontSize);
-    resizeObserver.observe(container);
     window.addEventListener("resize", calculateFontSize);
 
     return () => {
-      resizeObserver.disconnect();
       window.removeEventListener("resize", calculateFontSize);
     };
   }, [children, minFontSize, maxFontSize]);
 
   // Calculate offset to eliminate baseline gap
   const baselineOffset = fontSize * 0.12;
-  const sideBearingOffset = fontSize * sideBearingRatio;
 
   return (
     <div
@@ -92,6 +79,8 @@ export default function FitText({
         margin: 0, 
         padding: 0,
         height: `${fontSize * 0.75}px`,
+        display: 'flex',
+        justifyContent: 'center',
       }}
     >
       <span
@@ -103,9 +92,7 @@ export default function FitText({
           lineHeight: 1,
           padding: 0,
           margin: 0,
-          transform: `scaleX(${scaleX}) translateY(-${baselineOffset}px)`,
-          transformOrigin: "left top",
-          marginLeft: `-${sideBearingOffset}px`,
+          transform: `translateX(-${fontSize * 0.04}px) translateY(-${baselineOffset}px)`,
         }}
       >
         {children}

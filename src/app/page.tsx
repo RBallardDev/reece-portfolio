@@ -10,10 +10,10 @@ export default function Home() {
         <SummaryGrid />
       </main>
 
-      {/* Footer text - full viewport width, padding above, flush to all edges */}
+      {/* Footer text - full viewport width, padding above, centered */}
       <footer className="pt-32 w-screen">
         <FitText className="font-bold tracking-tight uppercase text-white/90">
-          RBALLARDDEV.
+          RBALLAR<span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>D</span>DEV
         </FitText>
       </footer>
     </div>
