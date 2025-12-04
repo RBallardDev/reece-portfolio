@@ -2,7 +2,7 @@ import EngineeringView from "@/components/engineering/EngineeringView";
 
 export default function EngineeringPage() {
   return (
-    <main className="min-h-screen pt-24 px-6 pb-16 max-w-7xl mx-auto">
+    <main className="pt-24 px-6 pb-16 md:pb-6">
       <EngineeringView />
     </main>
   );

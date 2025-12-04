@@ -2,15 +2,26 @@ type EngineeringCardProps = {
   title: string;
   type: string;
   summary: string;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
 };
 
 export default function EngineeringCard({
   title,
   type,
   summary,
+  onHoverStart,
+  onHoverEnd,
 }: EngineeringCardProps) {
   return (
-    <div className="group rounded-xl border border-white/10 bg-white/0 p-5 transition-colors hover:border-white/25 hover:bg-white/5">
+    <div
+      className="group rounded-xl border border-white/10 bg-white/0 p-5 transition-colors hover:border-white/25 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/30 focus-visible:outline-offset-2"
+      tabIndex={0}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+      onFocus={onHoverStart}
+      onBlur={onHoverEnd}
+    >
       {/* Image placeholder */}
       <div className="aspect-video w-full rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/30 text-xs mb-4">
         Image placeholder
@@ -33,4 +44,3 @@ export default function EngineeringCard({
     </div>
   );
 }
-
