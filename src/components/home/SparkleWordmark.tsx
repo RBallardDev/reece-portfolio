@@ -147,16 +147,23 @@ export default function SparkleWordmark() {
           transform: `translateX(-${fontSize * 0.04}px) translateY(-${baselineOffset}px)`,
         }}
       >
-        {WORDMARK_CHARS.map((charData, index) => (
-          <span
-            key={index}
-            className="inline-block cursor-default"
-            style={charData.flipped ? { transform: "scaleX(-1)" } : undefined}
-            onMouseEnter={handleCharHover}
-          >
-            {charData.char}
-          </span>
-        ))}
+        {WORDMARK_CHARS.map((charData, index) => {
+          // Add gap between "RBALL" and "ARDDEV" (after index 4, the second L)
+          const gapStyle = index === 5 ? { marginLeft: "0.04em" } : undefined;
+          const flipStyle = charData.flipped ? { transform: "scaleX(-1)" } : undefined;
+          const combinedStyle = { ...flipStyle, ...gapStyle };
+          
+          return (
+            <span
+              key={index}
+              className="inline-block cursor-default"
+              style={Object.keys(combinedStyle).length > 0 ? combinedStyle : undefined}
+              onMouseEnter={handleCharHover}
+            >
+              {charData.char}
+            </span>
+          );
+        })}
       </span>
     </div>
   );

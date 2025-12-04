@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import SkillPills from "./SkillPills";
 import EngineeringGrid from "./EngineeringGrid";
@@ -63,11 +63,28 @@ export default function EngineeringView() {
     return resolveOpenParam(searchParams.get("open"));
   }, [searchParams]);
 
+  const initialIsMobile =
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 767px)").matches
+      : false;
+
   const [mode, setMode] = useState<ToggleMode>("projects");
-  const [skillsExpanded, setSkillsExpanded] = useState(false);
+  const [skillsExpanded, setSkillsExpanded] = useState(
+    initialIsMobile && initialSelectedItem ? true : false
+  );
   const [activeSkillIds, setActiveSkillIds] = useState<string[] | null>(null);
   const [activeSkillColors, setActiveSkillColors] = useState<Record<string, string>>({});
   const [selectedItem, setSelectedItem] = useState<SelectedItem>(initialSelectedItem);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Track mobile breakpoint so we can auto-open skills on mobile detail view
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   const handleCardHoverStart = useCallback((skillIds: string[]) => {
     if (skillIds.length > 0) {
@@ -81,17 +98,29 @@ export default function EngineeringView() {
     setActiveSkillColors({});
   }, []);
 
-  const handleCardClick = useCallback((id: string, type: "project" | "experience") => {
-    setSelectedItem({ id, type });
-  }, []);
+  const handleCardClick = useCallback(
+    (id: string, type: "project" | "experience") => {
+      setSelectedItem({ id, type });
+      if (isMobile) {
+        setSkillsExpanded(true);
+      }
+    },
+    [isMobile]
+  );
 
   const handleBackToGrid = useCallback(() => {
     setSelectedItem(null);
   }, []);
 
-  const handleMapOpenItem = useCallback((kind: "experience" | "project", id: string) => {
-    setSelectedItem({ id, type: kind });
-  }, []);
+  const handleMapOpenItem = useCallback(
+    (kind: "experience" | "project", id: string) => {
+      setSelectedItem({ id, type: kind });
+      if (isMobile) {
+        setSkillsExpanded(true);
+      }
+    },
+    [isMobile]
+  );
 
   const toggleButtons: { key: ToggleMode; label: string }[] = [
     { key: "projects", label: "[Projects]" },
@@ -196,23 +225,34 @@ export default function EngineeringView() {
       <h1 className="text-4xl font-bold md:hidden mt-6 mb-4">Engineering</h1>
 
       {/* Mobile toggle row */}
-      <div className="flex items-center justify-end gap-4 md:hidden mb-6">
-        {toggleButtons.map((btn) => (
-          <button
-            key={btn.key}
-            onClick={() => {
-              setMode(btn.key);
-              setSelectedItem(null);
-            }}
-            className={`text-sm font-medium transition-colors ${
-              mode === btn.key
-                ? "text-white"
-                : "text-white/60 hover:text-white/90"
-            }`}
-          >
-            {btn.label}
-          </button>
-        ))}
+      <div className="flex items-center gap-4 md:hidden mb-6">
+        {toggleButtons.map((btn) => {
+          const isMap = btn.key === "map";
+          const isActive = mode === btn.key;
+
+          return (
+            <button
+              key={btn.key}
+              type="button"
+              disabled={isMap}
+              onClick={() => {
+                if (isMap) return; // Safeguard: no map on mobile
+                setMode(btn.key);
+                setSelectedItem(null);
+              }}
+              aria-disabled={isMap ? true : undefined}
+              className={`text-sm font-medium transition-colors ${
+                isMap
+                  ? "text-white/30 cursor-not-allowed"
+                  : isActive
+                  ? "text-white"
+                  : "text-white/60 hover:text-white/90"
+              }`}
+            >
+              {btn.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Mobile: grid or detail (normal page scroll) */}

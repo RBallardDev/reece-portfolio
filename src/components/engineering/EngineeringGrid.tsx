@@ -39,6 +39,7 @@ export default function EngineeringGrid({
           key={experience.id}
           title={experience.title}
           type={experience.role}
+          previousType={experience.previousRole}
           summary={experience.summary}
           onHoverStart={() => onCardHoverStart?.(experience.skillIds)}
           onHoverEnd={onCardHoverEnd}

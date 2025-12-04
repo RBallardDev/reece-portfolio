@@ -399,3 +399,74 @@ body::-webkit-scrollbar {
     opacity: 0;
   }
 }
+
+/* ============================================
+   Menu Stickman - Simple Fade In/Out
+   ============================================ */
+
+/* Visible state (static) */
+.menu-stickman-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Fade in animation (respawn) */
+.menu-stickman-fadein {
+  animation: menu-stickman-appear 0.35s ease-out forwards;
+}
+
+@keyframes menu-stickman-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fade out animation */
+.menu-stickman-fadeout {
+  animation: menu-stickman-pop 0.4s ease-out forwards;
+}
+
+@keyframes menu-stickman-pop {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* Hidden (instant, for reduced motion) */
+.menu-stickman-hidden {
+  opacity: 0;
+  transform: scale(0);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .menu-stickman-visible,
+  .menu-stickman-fadein {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .menu-stickman-fadeout {
+    animation: none;
+    opacity: 0;
+  }
+}

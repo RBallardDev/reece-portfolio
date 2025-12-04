@@ -47,6 +47,7 @@ export type Experience = {
   title: string;
   org?: string;
   role: string;
+  previousRole?: string; // For showing promotion history
   timeframe?: string;
   summary: string;
   skillIds: string[];
@@ -317,6 +318,7 @@ const experiences: Experience[] = [
     title: "WeBeGiggin'",
     org: "WeBeGiggin'",
     role: "Full-Stack Engineer",
+    previousRole: "Full-Stack & Project Management Intern",
     timeframe: "2023 – Present",
     summary: "Led development of web and mobile platforms serving thousands of users.",
     skillIds: [
@@ -346,7 +348,7 @@ const experiences: Experience[] = [
     slug: "enact",
     title: "Enact Insight",
     org: "Enact Insight",
-    role: "Software Engineer",
+    role: "Software Engineering Intern",
     timeframe: "2022 – 2023",
     summary: "Built scalable backend systems and contributed to core product features.",
     skillIds: ["python", "django", "postgresql", "sql", "rest-apis", "docker", "git"],
@@ -362,7 +364,8 @@ const experiences: Experience[] = [
     slug: "open-planner",
     title: "Open Planner",
     org: "Open Planner",
-    role: "Founder / Developer",
+    role: "Lead Software Engineer",
+    previousRole: "Software Engineer",
     timeframe: "2022 – Present",
     summary: "Created and launched a productivity tool from concept to market.",
     skillIds: [
