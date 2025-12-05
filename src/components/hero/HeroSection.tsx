@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import InteractiveHeadline from "./InteractiveHeadline";
 import dynamic from "next/dynamic";
 
@@ -13,6 +14,13 @@ const HeroModelPreview = dynamic(() => import("./HeroModelPreview"), {
 });
 
 export default function HeroSection() {
+  const [showExplore, setShowExplore] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowExplore(true), 8000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
       {/* Left: Intro text */}
@@ -39,6 +47,17 @@ export default function HeroSection() {
         <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-md">
           Web + mobile apps, UI systems, and the occasional ML or 3D experiment.
           If it&apos;s fun, I&apos;ll probably ship it.
+        </p>
+        <p className="mt-8 text-xs uppercase tracking-widest text-white/70 max-w-md overflow-hidden">
+          <span
+            className={`inline-block transition-all duration-700 ease-out will-change-transform ${
+              showExplore
+                ? "opacity-100 translate-y-0 blur-0"
+                : "opacity-0 translate-y-2 blur-sm"
+            }`}
+          >
+            explore ↓
+          </span>
         </p>
       </div>
 

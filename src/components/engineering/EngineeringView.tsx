@@ -104,6 +104,7 @@ export default function EngineeringView() {
       if (isMobile) {
         setSkillsExpanded(true);
       }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
     [isMobile]
   );
@@ -118,6 +119,7 @@ export default function EngineeringView() {
       if (isMobile) {
         setSkillsExpanded(true);
       }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
     [isMobile]
   );
