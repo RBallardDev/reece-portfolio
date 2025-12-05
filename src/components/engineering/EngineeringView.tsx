@@ -104,7 +104,12 @@ export default function EngineeringView() {
       if (isMobile) {
         setSkillsExpanded(true);
       }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Use Lenis scrollTo if available, otherwise fallback to native
+      if (window.lenis) {
+        window.lenis.scrollTo(0, { duration: 0.8 });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     },
     [isMobile]
   );
@@ -119,7 +124,12 @@ export default function EngineeringView() {
       if (isMobile) {
         setSkillsExpanded(true);
       }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Use Lenis scrollTo if available, otherwise fallback to native
+      if (window.lenis) {
+        window.lenis.scrollTo(0, { duration: 0.8 });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     },
     [isMobile]
   );

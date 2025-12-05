@@ -26,23 +26,10 @@ export default function HeroSection() {
       {/* Left: Intro text */}
       <div className="flex flex-col justify-center">
         <p className="text-xs uppercase tracking-widest text-white/60 mb-4">
-          Software Engineer &amp; Creative
+          Doing what I love.
         </p>
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-          <InteractiveHeadline
-            text={
-              <>
-                Doing what I{" "}
-                <span className="loveWord" tabIndex={0} role="text">
-                  <span className="loveFill">love</span>
-                  <span className="loveStroke" aria-hidden="true">
-                    love
-                  </span>
-                </span>
-                .
-              </>
-            }
-          />
+          <InteractiveHeadline text="Software Engineer & Creative" />
         </h1>
         <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-md">
           Web + mobile apps, UI systems, and the occasional ML or 3D experiment.

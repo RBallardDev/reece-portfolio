@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 type InteractiveHeadlineProps = {
   text: ReactNode;
@@ -11,10 +11,7 @@ export default function InteractiveHeadline({
   text,
   className = "",
 }: InteractiveHeadlineProps) {
-  const [loveAnimating, setLoveAnimating] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const LOVE_ANIM_DURATION = 2500;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -25,22 +22,8 @@ export default function InteractiveHeadline({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  const triggerLoveAnimation = () => {
-    if (loveAnimating) return;
-    setLoveAnimating(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setLoveAnimating(false), LOVE_ANIM_DURATION);
-  };
-
   const loveClassNames = [
     "loveWord",
-    loveAnimating ? "love-animating" : "",
     reduceMotion ? "love-reduce-motion" : "",
   ]
     .filter(Boolean)
@@ -65,8 +48,6 @@ export default function InteractiveHeadline({
             className={loveClassNames}
             tabIndex={0}
             role="text"
-            onMouseEnter={triggerLoveAnimation}
-            onFocus={triggerLoveAnimation}
           >
             <span className="loveFill">love</span>
             <span className="loveStroke" aria-hidden="true">
