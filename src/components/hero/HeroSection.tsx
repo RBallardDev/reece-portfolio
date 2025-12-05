@@ -21,16 +21,29 @@ export default function HeroSection() {
           Software Engineer &amp; Creative
         </p>
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-          <InteractiveHeadline text="Doing what I love" />
+          <InteractiveHeadline
+            text={
+              <>
+                Doing what I{" "}
+                <span className="loveWord" tabIndex={0} role="text">
+                  <span className="loveFill">love</span>
+                  <span className="loveStroke" aria-hidden="true">
+                    love
+                  </span>
+                </span>
+                .
+              </>
+            }
+          />
         </h1>
         <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-md">
           Web + mobile apps, UI systems, and the occasional ML or 3D experiment.
-          If it's fun, I'll probably ship it.
+          If it&apos;s fun, I&apos;ll probably ship it.
         </p>
       </div>
 
       {/* Right: 3D preview */}
-      <div className="flex items-center justify-center">
+      <div className="hidden lg:flex items-center justify-center">
         <HeroModelPreview />
       </div>
     </section>

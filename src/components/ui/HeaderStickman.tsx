@@ -658,19 +658,20 @@ export default function HeaderStickman({ exiting = false, onExitComplete }: Head
         >
           <div className="stickman-upper">
             {/* Head - D-shaped with flat side as face */}
-            <div
-              ref={headRef}
-              className="absolute"
-              style={{
-                top: 0,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "8px",
-                height: "8px",
-                border: "2px solid rgba(255,255,255,1)",
-                borderRadius: "50%", // Initial, will be updated by JS
-              }}
-            />
+                <div
+                  ref={headRef}
+                  className="absolute"
+                  style={{
+                    top: 0,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "8px",
+                    height: "8px",
+                    border: "2px solid rgba(255,255,255,1)",
+                    background: "rgba(255,255,255,1)", // fill head solid white
+                    borderRadius: "50%", // Initial, will be updated by JS
+                  }}
+                />
             {/* Body */}
             <div
               className="absolute bg-white"

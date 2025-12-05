@@ -1,16 +1,9 @@
 "use client";
 
-import React, {
-  Suspense,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+import React, { Suspense, useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { Box3, Vector3, Scene } from "three";
+import { Box3, Vector3, Scene, Group } from "three";
 
 type ModelProps = {
   url: string;
@@ -21,12 +14,9 @@ type ModelProps = {
 function Model({ url, targetRot, reduceMotion }: ModelProps) {
   const { scene } = useGLTF(url) as unknown as { scene: Scene };
 
-  const cloned = useMemo(() => scene.clone(true), [scene]);
-  const groupRef = useRef<THREE.Group>(null);
-  const currentRot = useRef({ x: 0, y: 0 });
-
-  useLayoutEffect(() => {
-    const box = new Box3().setFromObject(cloned);
+  const cloned = useMemo(() => {
+    const c = scene.clone(true);
+    const box = new Box3().setFromObject(c);
     const size = new Vector3();
     const center = new Vector3();
     box.getSize(size);
@@ -36,30 +26,35 @@ function Model({ url, targetRot, reduceMotion }: ModelProps) {
     const targetSize = 1.8; // tweak to nicely fill the frame
     const scale = targetSize / maxAxis;
 
-    cloned.scale.setScalar(scale);
-    cloned.position.sub(center); // center at origin
-    cloned.position.y -= size.y * 0.5; // lift so base rests near ground
-  }, [cloned]);
+    c.scale.setScalar(scale);
+    c.position.sub(center); // center at origin
+    c.position.y -= size.y * 0.5; // lift so base rests near ground
+
+    return c;
+  }, [scene]);
+  const groupRef = useRef<Group>(null);
+  const currentRot = useRef({ x: 0, y: 0 });
+  const baseY = 1.9; // raise the model higher in frame
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    const t = clock.getElapsedTime();
 
     if (reduceMotion) {
       groupRef.current.rotation.set(0, 0, 0);
-      groupRef.current.position.y = 0;
+      groupRef.current.position.y = baseY;
       return;
     }
 
-    const idleY = Math.sin(t) * 0.05;
-    const idleYaw = Math.sin(t * 0.5) * 0.15;
+    const t = clock.getElapsedTime();
+    const idleY = Math.sin(t * 0.8) * 0.08; // gentle float
+    const idleSpin = t * 0.35; // slow continuous rotation
 
     currentRot.current.x += (targetRot.current.x - currentRot.current.x) * 0.08;
     currentRot.current.y += (targetRot.current.y - currentRot.current.y) * 0.08;
 
     groupRef.current.rotation.x = currentRot.current.x;
-    groupRef.current.rotation.y = idleYaw + currentRot.current.y;
-    groupRef.current.position.y = idleY;
+    groupRef.current.rotation.y = idleSpin + currentRot.current.y;
+    groupRef.current.position.y = baseY + idleY;
   });
 
   return (
@@ -104,7 +99,10 @@ export default function HeroModelPreview() {
   const containerRef = useRef<HTMLDivElement>(null);
   const targetRot = useRef({ x: 0, y: 0 });
   const [reduceMotion, setReduceMotion] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
+  const [isTouch] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return "ontouchstart" in window || (navigator.maxTouchPoints ?? 0) > 0;
+  });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -112,10 +110,6 @@ export default function HeroModelPreview() {
     const updateRM = () => setReduceMotion(rm.matches);
     updateRM();
     rm.addEventListener("change", updateRM);
-
-    const touch =
-      "ontouchstart" in window || (navigator.maxTouchPoints ?? 0) > 0;
-    setIsTouch(touch);
 
     return () => {
       rm.removeEventListener("change", updateRM);
@@ -156,17 +150,24 @@ export default function HeroModelPreview() {
             <Canvas
               dpr={[1, 1.5]}
               gl={{ antialias: true, alpha: true }}
-              camera={{ position: [0, 1.2, 3], fov: 45 }}
+              camera={{ position: [0, 0.9, 2.5], fov: 45 }}
               onError={() => setLoadError(true)}
             >
               <ambientLight intensity={0.6} />
-              <directionalLight position={[2, 3, 4]} intensity={0.9} />
+              <directionalLight position={[2, 3, 4]} intensity={1.0} />
+              <pointLight position={[1.2, 1.8, 2.2]} intensity={1.15} distance={10} decay={2} />
+              {/* Top accent light to brighten the star */}
+              <pointLight position={[0, 2.4, 1.4]} intensity={1.2} distance={6} decay={2} />
               <Model
-                url="/models/test.glb"
+                url="/models/tree.glb"
                 targetRot={targetRot}
                 reduceMotion={reduceMotion}
               />
-              <OrbitControls enableZoom={false} enablePan={false} />
+              <OrbitControls
+                enableZoom={false}
+                enablePan={false}
+                target={[0, 1.2, 0]}
+              />
             </Canvas>
           </Suspense>
         )}
@@ -175,6 +176,6 @@ export default function HeroModelPreview() {
   );
 }
 
-useGLTF.preload("/models/test.glb");
+useGLTF.preload("/models/tree.glb");
 
 

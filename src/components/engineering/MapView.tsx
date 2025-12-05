@@ -32,7 +32,6 @@ const TOGGLE_COLORS = [
   "#FF8509",
   "#17A745",
   "#163CE0",
-  "#EF9CE2",
 ];
 
 const getRandomToggleColor = () =>

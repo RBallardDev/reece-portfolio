@@ -393,6 +393,60 @@ body::-webkit-scrollbar {
   }
 }
 
+/* Love word outline -> fill */
+.loveWord {
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
+
+.loveFill {
+  position: relative;
+  color: #fff;
+  transition: color 200ms ease;
+}
+
+.loveStroke {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  -webkit-text-stroke: 2px #F6082A;
+  text-shadow:
+    0 0 1px rgba(246, 8, 42, 0.8),
+    0 0 2px rgba(246, 8, 42, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  display: none; /* hidden for the simplified effect */
+}
+
+@supports not (-webkit-text-stroke: 2px red) {
+  .loveStroke {
+    text-shadow:
+      1px 1px 0 #F6082A,
+      -1px 1px 0 #F6082A,
+      1px -1px 0 #F6082A,
+      -1px -1px 0 #F6082A;
+  }
+}
+
+.loveWord.love-animating .loveFill {
+  animation: love-fade-seq 2500ms ease-in-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loveWord.love-animating .loveFill {
+    animation: none;
+    color: #F6082A;
+  }
+}
+
+@keyframes love-fade-seq {
+  0% { color: #fff; }
+  20% { color: #F6082A; }  /* fade in (~0.5s of 2.5s) */
+  80% { color: #F6082A; }  /* hold (~1.5s) */
+  100% { color: #fff; }    /* fade out (~0.5s) */
+}
+
 @media (prefers-reduced-motion: reduce) {
   .contact-sparkle {
     animation: none;
