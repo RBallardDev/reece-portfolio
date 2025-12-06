@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavTabs from "./NavTabs";
 import HeaderStickman from "@/components/ui/HeaderStickman";
 import MenuStickman from "@/components/nav/MenuStickman";
 import MobileMenuPopover from "@/components/nav/MobileMenuPopover";
+import NameLogo from "@/components/nav/NameLogo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -104,9 +104,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-black/80 backdrop-blur-sm border-b border-white/10">
-      <Link href="/" className="text-xl font-semibold tracking-tight">
-        Reece Ballard
-      </Link>
+      <NameLogo />
       
       {/* Desktop: Stickman area + Nav tabs */}
       <div className="flex-1 mx-8 hidden sm:block">

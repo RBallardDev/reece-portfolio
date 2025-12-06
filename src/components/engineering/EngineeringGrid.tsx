@@ -22,6 +22,9 @@ export default function EngineeringGrid({
             key={project.id}
             title={project.title}
             type={project.category}
+            coverImage={
+              project.media?.find((m) => m.kind === "image")?.src
+            }
             summary={project.summary}
             onHoverStart={() => onCardHoverStart?.(project.skillIds)}
             onHoverEnd={onCardHoverEnd}

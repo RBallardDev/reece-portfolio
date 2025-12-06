@@ -117,6 +117,13 @@ const projects: Project[] = [
     title: "WBG Website",
     category: "web",
     summary: "Full-stack web platform with modern design and seamless user experience.",
+    media: [
+      {
+        kind: "image",
+        src: "/images/projects/wbg-web/cover1.png",
+        alt: "WBG website cover",
+      },
+    ],
     skillIds: [
       "typescript",
       "react",
