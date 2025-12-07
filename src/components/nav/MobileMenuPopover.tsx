@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
+import MobileContactLinks from "@/components/shared/MobileContactLinks";
 
 type Tab = {
   label: string;
@@ -21,6 +23,62 @@ const tabs: Tab[] = [
   },
 ];
 
+// Header height constant (matches header py-4 = 16px * 2 + content ~57px)
+const HEADER_HEIGHT = 57;
+
+// Confetti colors
+const CONFETTI_COLORS = [
+  "#163CE0", // blue
+  "#FFD20F", // yellow
+  "#F6082A", // pink/red
+  "#FF8509", // orange
+  "#502B92", // purple
+  "#17A745", // green
+  "#FFFFFF", // white
+];
+
+// Spawn confetti from a point
+function spawnConfetti(x: number, y: number, count: number = 8) {
+  const particles: HTMLDivElement[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("div");
+    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    const size = 5 + Math.random() * 5;
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.8;
+    const velocity = 50 + Math.random() * 60;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity;
+
+    particle.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      animation: menu-confetti 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      --confetti-vx: ${vx}px;
+      --confetti-vy: ${vy}px;
+    `;
+
+    document.body.appendChild(particle);
+    particles.push(particle);
+  }
+
+  // Clean up particles after animation
+  setTimeout(() => {
+    particles.forEach((p) => p.remove());
+  }, 1300);
+}
+
+// Clip-path values - circle originates from menu button area (top-right)
+const CLIP_CLOSED = `circle(0px at calc(100% - 48px) 0px)`;
+const CLIP_OPEN = `circle(150vmax at calc(100% - 48px) 0px)`;
+
 type MobileMenuPopoverProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -29,27 +87,30 @@ type MobileMenuPopoverProps = {
 export default function MobileMenuPopover({ isOpen, onClose }: MobileMenuPopoverProps) {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  // Close on outside click
+  // Check for reduced motion preference
   useEffect(() => {
-    if (!isOpen) return;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(query.matches);
 
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    query.addEventListener("change", handler);
+    return () => query.removeEventListener("change", handler);
+  }, []);
 
-    // Use setTimeout to avoid immediate close from the same click that opened
-    const timeoutId = setTimeout(() => {
-      document.addEventListener("click", handleClickOutside);
-    }, 0);
-
+  // Lock body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
     return () => {
-      clearTimeout(timeoutId);
-      document.removeEventListener("click", handleClickOutside);
+      document.body.style.overflow = "";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   // Close on ESC
   useEffect(() => {
@@ -65,39 +126,170 @@ export default function MobileMenuPopover({ isOpen, onClose }: MobileMenuPopover
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Focus first link when menu opens
+  useEffect(() => {
+    if (isOpen && firstLinkRef.current) {
+      // Delay to allow animation to start
+      const timer = setTimeout(() => {
+        firstLinkRef.current?.focus();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // Spawn confetti when menu opens
+  useEffect(() => {
+    if (isOpen && !reducedMotion) {
+      // Spawn from near the menu button (top-right area)
+      const x = window.innerWidth - 48;
+      const y = HEADER_HEIGHT / 2;
+      
+      // Small delay to sync with animation start
+      const timer = setTimeout(() => {
+        spawnConfetti(x, y, 10);
+      }, 50);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, reducedMotion]);
+
   // Close when navigating
   useEffect(() => {
     onClose();
   }, [pathname, onClose]);
 
-  if (!isOpen) return null;
+  // Animation variants for the overlay
+  const overlayVariants = reducedMotion
+    ? {
+        hidden: { opacity: 0 },
+        visible: { 
+          opacity: 1,
+          transition: { duration: 0.3 },
+        },
+        exit: { 
+          opacity: 0,
+          transition: { duration: 0.2 },
+        },
+      }
+    : {
+        hidden: { clipPath: CLIP_CLOSED },
+        visible: { 
+          clipPath: CLIP_OPEN,
+          transition: {
+            duration: 1,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        },
+        exit: { 
+          clipPath: CLIP_CLOSED,
+          transition: {
+            duration: 0.5,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        },
+      };
+
+  // Animation variants for staggered content
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: reducedMotion ? 0.1 : 0.35,
+      },
+    },
+    exit: {
+      transition: {
+        staggerChildren: 0.03,
+        staggerDirection: -1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 12 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: { 
+      opacity: 0, 
+      y: -8,
+      transition: {
+        duration: 0.2,
+      },
+    },
+  };
 
   return (
-    <div
-      ref={menuRef}
-      role="menu"
-      className="absolute top-full right-0 mt-2 py-2 px-1 bg-black/95 backdrop-blur-sm border border-white/10 rounded-lg shadow-xl min-w-[160px] z-50"
-    >
-      {tabs.map((tab) => {
-        const isActive = pathname === tab.href;
-        return (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            role="menuitem"
-            className={`block px-4 py-2.5 text-base font-semibold rounded-md transition-colors ${
-              isActive
-                ? "text-white bg-white/10"
-                : "text-white/70 hover:text-white hover:bg-white/5"
-            } focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/30 focus-visible:outline-offset-[-2px]`}
-            style={tab.style}
-            onClick={onClose}
+    <AnimatePresence mode="wait">
+      {isOpen && (
+        <motion.div
+          ref={menuRef}
+          role="menu"
+          className="fixed inset-0 z-[60] bg-black flex flex-col overflow-y-auto"
+          style={{ top: HEADER_HEIGHT }}
+          variants={overlayVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          {/* Navigation tabs */}
+          <motion.nav 
+            className="flex-shrink-0 pt-2"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
           >
-            {tab.label}
-          </Link>
-        );
-      })}
-    </div>
+            <ul>
+              {tabs.map((tab, index) => {
+                const isActive = pathname === tab.href;
+                return (
+                  <motion.li key={tab.href} variants={itemVariants}>
+                    {index > 0 && (
+                      <div className="w-screen h-px bg-white/10" />
+                    )}
+                    <Link
+                      ref={index === 0 ? firstLinkRef : undefined}
+                      href={tab.href}
+                      role="menuitem"
+                      className={`block text-2xl font-bold transition-colors px-6 py-2 ${
+                        isActive
+                          ? "text-white"
+                          : "text-white/50 hover:text-white"
+                      }`}
+                      style={tab.style}
+                      onClick={onClose}
+                    >
+                      {tab.label}
+                    </Link>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          </motion.nav>
+
+          {/* Spacer to push footer to bottom */}
+          <div className="flex-1" />
+
+          {/* Footer - CTA + big bold contact links */}
+          <motion.footer 
+            className="flex-shrink-0"
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={{ delay: reducedMotion ? 0.2 : 0.5 }}
+          >
+            <MobileContactLinks showCTA />
+          </motion.footer>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
-

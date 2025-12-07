@@ -16,9 +16,9 @@ const CONFETTI_COLORS = [
 ];
 
 const THANK_MESSAGES = ["Thanks!", "ありがとう"];
-// Rounded-point face side (right/left) - avoid flat edge (swapped to correct facing)
-const HEAD_FACE_RIGHT = "25% 70% 70% 25% / 30% 60% 40% 70%";
-const HEAD_FACE_LEFT = "70% 25% 25% 70% / 60% 30% 70% 40%";
+// Rounded-point face side (right/left) - flipped back
+const HEAD_FACE_RIGHT = "70% 25% 25% 70% / 60% 30% 70% 40%";
+const HEAD_FACE_LEFT = "25% 70% 70% 25% / 30% 60% 40% 70%";
 
 // Easing functions
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);

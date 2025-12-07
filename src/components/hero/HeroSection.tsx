@@ -24,18 +24,18 @@ export default function HeroSection() {
   return (
     <section className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
       {/* Left: Intro text */}
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center items-center text-center sm:items-start sm:text-left">
         <p className="text-xs uppercase tracking-widest text-white/60 mb-4">
-          Doing what I love.
+          Los Angeles, CA | Remote
         </p>
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-          <InteractiveHeadline text="Software Engineer & Creative" />
+          <InteractiveHeadline text="Full-stack Engineer" />
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-md">
-          Web + mobile apps, UI systems, and the occasional ML or 3D experiment.
-          If it&apos;s fun, I&apos;ll probably ship it.
+        <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-md mx-auto sm:mx-0 text-center sm:text-left">
+          I design and build web + mobile apps end-to-end — UI/UX, front-end,
+          back-end, integrations (auth, payments, APIs), and deployment.
         </p>
-        <p className="mt-8 text-xs uppercase tracking-widest text-white/70 max-w-md overflow-hidden">
+        <p className="mt-8 text-xs uppercase tracking-widest text-white/70 max-w-md overflow-hidden text-center sm:text-left">
           <span
             className={`inline-block transition-all duration-700 ease-out will-change-transform ${
               showExplore
