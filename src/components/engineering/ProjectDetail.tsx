@@ -49,7 +49,7 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
       {/* Back button */}
       <button
         onClick={onBack}
-        className="text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm"
+        className="text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm mt-6"
       >
         ← Back to {isProject ? "Projects" : "Experience"}
       </button>

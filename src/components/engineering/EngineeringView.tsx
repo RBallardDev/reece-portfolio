@@ -233,39 +233,36 @@ export default function EngineeringView() {
         )}
       </div>
 
-      {/* Mobile title */}
-      <h1 className="text-4xl font-bold md:hidden mt-6 mb-4">Engineering</h1>
-
-      {/* Mobile toggle row */}
-      <div className="flex items-center gap-4 md:hidden mb-6">
-        {toggleButtons.map((btn) => {
-          const isMap = btn.key === "map";
-          const isActive = mode === btn.key;
-
-          return (
-            <button
-              key={btn.key}
-              type="button"
-              disabled={isMap}
-              onClick={() => {
-                if (isMap) return; // Safeguard: no map on mobile
-                setMode(btn.key);
-                setSelectedItem(null);
-              }}
-              aria-disabled={isMap ? true : undefined}
-              className={`text-sm font-medium transition-colors ${
-                isMap
-                  ? "text-white/30 cursor-not-allowed"
-                  : isActive
-                  ? "text-white"
-                  : "text-white/60 hover:text-white/90"
-              }`}
-            >
-              {btn.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* Mobile: title + toggle row (like Me page) - hidden when detail view is open */}
+      {!selectedItem && (
+        <div className="flex items-center justify-between gap-4 mt-6 mb-6 md:hidden">
+          <h1 className="text-4xl font-bold">Engineering</h1>
+          <div className="flex items-center gap-4">
+            {toggleButtons
+              .filter((btn) => btn.key !== "map")
+              .map((btn) => {
+                const isActive = mode === btn.key;
+                return (
+                  <button
+                    key={btn.key}
+                    type="button"
+                    onClick={() => {
+                      setMode(btn.key);
+                      setSelectedItem(null);
+                    }}
+                    className={`text-sm font-medium transition-colors ${
+                      isActive
+                        ? "text-white"
+                        : "text-white/60 hover:text-white/90"
+                    }`}
+                  >
+                    {btn.label}
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
       {/* Mobile: grid or detail (normal page scroll) */}
       <div className="md:hidden">

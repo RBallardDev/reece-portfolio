@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { User, Code, Palette, Languages } from "lucide-react";
+import { motion } from "motion/react";
+import { revealItem } from "@/components/motion/reveal";
 
 const cards = [
   {
@@ -34,19 +38,26 @@ export default function SummaryGrid() {
       {cards.map((card) => {
         const Icon = card.icon;
         return (
-          <Link
+          <motion.div
             key={card.href}
-            href={card.href}
-            className="group block rounded-xl border border-white/10 bg-white/0 p-6 transition-colors hover:border-white/25 hover:bg-white/5"
+            variants={revealItem}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h3 className="text-lg font-medium">{card.title}</h3>
-                <p className="mt-1 text-sm text-white/60">{card.description}</p>
+            <Link
+              href={card.href}
+              className="group block rounded-xl border border-white/10 bg-white/0 p-6 transition-colors hover:border-white/25 hover:bg-white/5 h-full"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium">{card.title}</h3>
+                  <p className="mt-1 text-sm text-white/60">{card.description}</p>
+                </div>
+                <Icon className="w-5 h-5 text-white transition-colors group-hover:text-white flex-shrink-0 ml-4" />
               </div>
-              <Icon className="w-5 h-5 text-white transition-colors group-hover:text-white flex-shrink-0 ml-4" />
-            </div>
-          </Link>
+            </Link>
+          </motion.div>
         );
       })}
     </section>

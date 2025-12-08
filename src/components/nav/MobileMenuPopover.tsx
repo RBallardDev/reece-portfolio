@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
+import type { Variants } from "motion/react";
 import MobileContactLinks from "@/components/shared/MobileContactLinks";
 
 type Tab = {
@@ -88,13 +89,14 @@ export default function MobileMenuPopover({ isOpen, onClose }: MobileMenuPopover
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   // Check for reduced motion preference
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(query.matches);
-
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     query.addEventListener("change", handler);
     return () => query.removeEventListener("change", handler);
@@ -159,7 +161,7 @@ export default function MobileMenuPopover({ isOpen, onClose }: MobileMenuPopover
   }, [pathname, onClose]);
 
   // Animation variants for the overlay
-  const overlayVariants = reducedMotion
+  const overlayVariants: Variants = reducedMotion
     ? {
         hidden: { opacity: 0 },
         visible: { 
@@ -177,20 +179,20 @@ export default function MobileMenuPopover({ isOpen, onClose }: MobileMenuPopover
           clipPath: CLIP_OPEN,
           transition: {
             duration: 1,
-            ease: [0.22, 1, 0.36, 1],
+            ease: [0.22, 1, 0.36, 1] as const,
           },
         },
         exit: { 
           clipPath: CLIP_CLOSED,
           transition: {
             duration: 0.5,
-            ease: [0.22, 1, 0.36, 1],
+            ease: [0.22, 1, 0.36, 1] as const,
           },
         },
       };
 
   // Animation variants for staggered content
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: {},
     visible: {
       transition: {
@@ -206,14 +208,14 @@ export default function MobileMenuPopover({ isOpen, onClose }: MobileMenuPopover
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 12 },
     visible: { 
       opacity: 1, 
       y: 0,
       transition: {
         duration: 0.4,
-        ease: [0.22, 1, 0.36, 1],
+        ease: [0.22, 1, 0.36, 1] as const,
       },
     },
     exit: { 
