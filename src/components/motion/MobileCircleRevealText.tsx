@@ -49,31 +49,33 @@ export default function MobileCircleRevealText({
         opacity: 0,
         scale: 0.92,
         // @ts-expect-error - WebKit prefix properties
-        WebkitMaskImage: "radial-gradient(circle, #000 0%, transparent 1%)",
+        WebkitMaskImage: "radial-gradient(circle, #000 55%, transparent 65%)",
         WebkitMaskSize: "0% 0%",
         WebkitMaskPosition: "50% 50%",
         WebkitMaskRepeat: "no-repeat",
-        maskImage: "radial-gradient(circle, #000 0%, transparent 1%)",
+        maskImage: "radial-gradient(circle, #000 55%, transparent 65%)",
         maskSize: "0% 0%",
         maskPosition: "50% 50%",
         maskRepeat: "no-repeat",
+        clipPath: "circle(0% at 50% 50%)",
       }}
       animate={{
         opacity: 1,
         scale: 1,
         // @ts-expect-error - WebKit prefix properties
-        WebkitMaskImage: "radial-gradient(circle, #000 100%, #000 100%)",
-        WebkitMaskSize: "300% 300%",
+        WebkitMaskImage: "radial-gradient(circle, #000 55%, transparent 65%)",
+        WebkitMaskSize: "220% 220%",
         WebkitMaskPosition: "50% 50%",
         WebkitMaskRepeat: "no-repeat",
-        maskImage: "radial-gradient(circle, #000 100%, #000 100%)",
-        maskSize: "300% 300%",
+        maskImage: "radial-gradient(circle, #000 55%, transparent 65%)",
+        maskSize: "220% 220%",
         maskPosition: "50% 50%",
         maskRepeat: "no-repeat",
+        clipPath: "circle(140% at 50% 50%)",
       }}
       transition={{
-        duration: 2.5,
-        delay,
+        duration: 1.0,
+        delay: 0.2,
         ease: [0.22, 1, 0.36, 1],
       }}
       viewport={{ once: true }}
