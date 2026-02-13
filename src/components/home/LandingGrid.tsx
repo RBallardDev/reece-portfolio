@@ -1,0 +1,368 @@
+"use client";
+
+import { useCallback, useEffect, useRef } from "react";
+import Link from "next/link";
+import { User, Code, Palette, Languages } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { CSSProperties } from "react";
+
+const CONFETTI_COLORS = [
+  "#163CE0", "#FFD20F", "#F6082A",
+  "#FF8509", "#17A745", "#502B92",
+];
+
+function spawnConfetti(x: number, y: number) {
+  const count = 25 + Math.floor(Math.random() * 10);
+  const particles: HTMLDivElement[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("div");
+    particle.className = "confetti-particle";
+    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    const size = 4 + Math.random() * 5;
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = 40 + Math.random() * 70;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity - 20;
+    const rotation = Math.random() * 360;
+
+    particle.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      border-radius: ${Math.random() > 0.5 ? "50%" : "2px"};
+      pointer-events: none;
+      z-index: 9999;
+      --vx: ${vx}px;
+      --vy: ${vy}px;
+      --rotation: ${rotation}deg;
+    `;
+
+    document.body.appendChild(particle);
+    particles.push(particle);
+  }
+
+  setTimeout(() => {
+    particles.forEach((p) => p.remove());
+  }, 1000);
+}
+
+function playPopSound() {
+  try {
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+
+    // 1. High-pitched "boing" — starts high, swoops down
+    const boing = ctx.createOscillator();
+    boing.type = "sine";
+    boing.frequency.setValueAtTime(1200, now);
+    boing.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+
+    const boingGain = ctx.createGain();
+    boingGain.gain.setValueAtTime(0.3, now);
+    boingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+    boing.connect(boingGain);
+    boingGain.connect(ctx.destination);
+    boing.start(now);
+    boing.stop(now + 0.25);
+
+    // 2. Quick triangle "pop" hit
+    const pop = ctx.createOscillator();
+    pop.type = "triangle";
+    pop.frequency.setValueAtTime(800, now);
+    pop.frequency.exponentialRampToValueAtTime(100, now + 0.08);
+
+    const popGain = ctx.createGain();
+    popGain.gain.setValueAtTime(0.35, now);
+    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+    pop.connect(popGain);
+    popGain.connect(ctx.destination);
+    pop.start(now);
+    pop.stop(now + 0.1);
+
+    // 3. Bright noise "pff" for sparkle
+    const noiseLength = 0.12;
+    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * noiseLength, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseData.length; i++) {
+      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / noiseData.length, 2);
+    }
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = "highpass";
+    noiseFilter.frequency.value = 3000;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.15, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + noiseLength);
+
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noiseSource.start(now);
+
+    // Clean up context after sounds finish
+    setTimeout(() => ctx.close(), 400);
+  } catch {
+    // Audio not supported — silently skip
+  }
+}
+
+type QuadrantConfig = {
+  title: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  /** Extra classes for the quadrant (borders, position) */
+  className: string;
+  /** Optional style overrides (e.g. font-family for Japanese) */
+  style?: CSSProperties;
+};
+
+const quadrants: QuadrantConfig[] = [
+  {
+    title: "Me",
+    description: "Who I am and what drives me.",
+    href: "/me",
+    icon: User,
+    // Top-left: right border + bottom border
+    className: "border-r border-b border-white/10",
+  },
+  {
+    title: "Engineering",
+    description: "Software projects and technical work.",
+    href: "/engineering",
+    icon: Code,
+    // Top-right: bottom border only
+    className: "border-b border-white/10",
+  },
+  {
+    title: "Creative",
+    description: "Design, photography, and visual experiments.",
+    href: "/creative",
+    icon: Palette,
+    // Bottom-left: right border only
+    className: "border-r border-white/10",
+  },
+  {
+    title: "日本語",
+    description: "My journey learning Japanese.",
+    href: "/japanese",
+    icon: Languages,
+    // Bottom-right: no extra borders
+    className: "",
+    style: { fontFamily: '"Noto Sans JP", system-ui, sans-serif' },
+  },
+];
+
+// Lerp between two RGB colors based on t (0–1)
+function lerpColor(r1: number, g1: number, b1: number, r2: number, g2: number, b2: number, t: number) {
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+  return `rgb(${r},${g},${b})`;
+}
+
+const CHARGE_DURATION = 1500; // ms to reach explosion
+const COOLDOWN_FADE_SPEED = 0.03; // how fast charge drains when off the center
+
+export default function LandingGrid() {
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const cooldownRef = useRef(false);
+  const cursorVisibleRef = useRef(false);
+  // Charge progress: 0 = white, 1 = red/explode
+  const chargeRef = useRef(0);
+  const overCenterRef = useRef(false);
+  const chargeStartRef = useRef<number | null>(null);
+
+  // Directly set cursor opacity on the DOM — no React re-render
+  const showCursor = useCallback(() => {
+    cursorVisibleRef.current = true;
+    if (cursorRef.current) cursorRef.current.style.opacity = "1";
+  }, []);
+  const hideCursor = useCallback(() => {
+    cursorVisibleRef.current = false;
+    if (cursorRef.current) cursorRef.current.style.opacity = "0";
+  }, []);
+
+  const triggerExplosion = useCallback((x: number, y: number) => {
+    if (cooldownRef.current) return;
+    cooldownRef.current = true;
+    chargeRef.current = 0;
+    chargeStartRef.current = null;
+    overCenterRef.current = false;
+
+    // Hide cursor instantly, spawn confetti, play pop
+    hideCursor();
+    spawnConfetti(x, y);
+    playPopSound();
+
+    // Fade cursor back in after 2 seconds
+    setTimeout(() => {
+      showCursor();
+      cooldownRef.current = false;
+    }, 2000);
+  }, [hideCursor, showCursor]);
+
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    const center = centerRef.current;
+    if (!cursor || !center) return;
+
+    // Check for touch device — hide cursor follower
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isTouch) return;
+
+    const target = { x: 0, y: 0 };
+    const current = { x: 0, y: 0 };
+    const ease = 0.12; // Lower = more lag, higher = snappier
+    let rafId: number;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      target.x = e.clientX;
+      target.y = e.clientY;
+      if (!cursorVisibleRef.current && !cooldownRef.current) showCursor();
+    };
+
+    const handleMouseLeave = () => {
+      if (!cooldownRef.current) hideCursor();
+    };
+    const handleMouseEnter = () => {
+      if (!cooldownRef.current) showCursor();
+    };
+
+    const animate = () => {
+      current.x += (target.x - current.x) * ease;
+      current.y += (target.y - current.y) * ease;
+      cursor.style.transform = `translate(${current.x}px, ${current.y}px)`;
+
+      // Collision detection with center name element
+      if (!cooldownRef.current) {
+        const rect = center.getBoundingClientRect();
+        const cx = current.x;
+        const cy = current.y;
+        const isOver =
+          cx >= rect.left &&
+          cx <= rect.right &&
+          cy >= rect.top &&
+          cy <= rect.bottom;
+
+        if (isOver) {
+          // Start or continue charging
+          if (!overCenterRef.current) {
+            overCenterRef.current = true;
+            chargeStartRef.current = performance.now();
+          }
+
+          const elapsed = performance.now() - (chargeStartRef.current ?? performance.now());
+          chargeRef.current = Math.min(elapsed / CHARGE_DURATION, 1);
+
+          if (chargeRef.current >= 1) {
+            triggerExplosion(cx, cy);
+          }
+        } else {
+          // Cool down — drain charge back to 0
+          overCenterRef.current = false;
+          chargeStartRef.current = null;
+          if (chargeRef.current > 0) {
+            chargeRef.current = Math.max(chargeRef.current - COOLDOWN_FADE_SPEED, 0);
+          }
+        }
+
+        // Update cursor color: white (255,255,255) → red (246,8,42)
+        const t = chargeRef.current;
+        cursor.style.background = lerpColor(255, 255, 255, 246, 8, 42, t);
+      }
+
+      rafId = requestAnimationFrame(animate);
+    };
+
+    rafId = requestAnimationFrame(animate);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+    };
+  }, [triggerExplosion, showCursor, hideCursor]);
+
+  return (
+    <section className="relative h-dvh w-full grid grid-cols-2 grid-rows-2">
+      {/* Cursor follower circle */}
+      <div
+        ref={cursorRef}
+        className="fixed top-0 left-0 z-50 pointer-events-none transition-opacity duration-200"
+        style={{
+          width: 16,
+          height: 16,
+          marginLeft: -8,
+          marginTop: -8,
+          borderRadius: "50%",
+          background: "white",
+          opacity: 0,
+        }}
+      />
+      {/* Quadrant cells */}
+      {quadrants.map((q) => {
+        const Icon = q.icon;
+        return (
+          <Link
+            key={q.href}
+            href={q.href}
+            className={`group relative flex flex-col items-center justify-center gap-3 transition-colors duration-300 hover:bg-white/5 ${q.className}`}
+          >
+            <Icon
+              className="w-6 h-6 transition-colors duration-300 group-hover:text-white/60"
+              style={{ color: "#9E9E9E" }}
+              strokeWidth={1.5}
+            />
+            <h2
+              className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-white"
+              style={q.style}
+            >
+              {q.title}
+            </h2>
+            <p className="text-sm text-white/40 transition-colors duration-300 group-hover:text-white/60 max-w-[200px] text-center leading-relaxed">
+              {q.description}
+            </p>
+          </Link>
+        );
+      })}
+
+      {/* Center info — positioned at the intersection of all 4 quadrants */}
+      <div ref={centerRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none flex flex-col items-center gap-1">
+        <p className="text-xs uppercase tracking-widest text-white/50">
+          Los Angeles, CA | Remote
+        </p>
+        <span className="text-lg sm:text-xl lg:text-2xl font-semibold tracking-tight whitespace-nowrap">
+          <span className="text-white">[</span>
+          Reece Ballard
+          <span className="text-white">]</span>
+        </span>
+        <p className="text-sm text-white/50">
+          Software Engineer
+        </p>
+      </div>
+
+      {/* Scroll hint — uncomment to re-enable */}
+      {/* <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+        <p className="text-xs uppercase tracking-widest text-white/40 animate-bounce">
+          scroll ↓
+        </p>
+      </div> */}
+    </section>
+  );
+}
