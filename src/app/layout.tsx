@@ -4,6 +4,7 @@ import "./globals.css";
 import { neueMontreal } from "./styles/fonts";
 import Header from "@/components/layout/Header";
 import LenisProvider from "@/components/LenisProvider";
+import PageTransitionProvider from "@/components/transitions/PageTransitionProvider";
 
 export const metadata: Metadata = {
   title: "Reece Ballard",
@@ -22,8 +23,10 @@ export default function RootLayout({
         className="bg-black text-white font-sans antialiased"
       >
         <LenisProvider />
-        <Header />
-        {children}
+        <PageTransitionProvider>
+          <Header />
+          {children}
+        </PageTransitionProvider>
       </body>
     </html>
   );

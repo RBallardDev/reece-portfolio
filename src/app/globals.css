@@ -567,6 +567,58 @@ body::-webkit-scrollbar {
 }
 
 /* ============================================
+   Landing Page Entrance Animation
+   ============================================ */
+
+@keyframes landing-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes landing-fade-in-simple {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes landing-fade-in-dim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes landing-fade-in {
+    from, to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes landing-fade-in-simple {
+    from, to {
+      opacity: 1;
+    }
+  }
+  @keyframes landing-fade-in-dim {
+    from, to {
+      opacity: 0.6;
+    }
+  }
+}
+
+/* ============================================
    Landing Page Quadrant Expand Transition
    ============================================ */
 

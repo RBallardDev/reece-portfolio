@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { usePageTransition } from "@/components/transitions/PageTransitionProvider";
 import styles from "./NameLogo.module.css";
 
 export default function NameLogo() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const { navigateHome } = usePageTransition();
   const [isHovered, setIsHovered] = useState(false);
   
   // Toggle animations globally (set to true to re-enable collapse/expand)
@@ -83,11 +84,19 @@ export default function NameLogo() {
   // B slide distance (width of "eece " to slide left)
   const bSlideDistance = eeceWidth;
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isHome) {
+      navigateHome();
+    }
+  };
+
   return (
-    <Link
+    <a
       href="/"
       className={styles.logo}
       aria-label="Reece Ballard - Go to home"
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onFocus={() => setIsHovered(true)}
@@ -157,6 +166,6 @@ export default function NameLogo() {
       </span>
       <span className={styles.bracket}>]</span>
       <span className={styles.srOnly}>Reece Ballard</span>
-    </Link>
+    </a>
   );
 }

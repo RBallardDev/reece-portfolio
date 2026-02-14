@@ -172,6 +172,11 @@ const COOLDOWN_FADE_SPEED = 0.03; // how fast charge drains when off the center
 const SCROLL_THRESHOLD = 150; // px of scroll to reach full dim
 const TRANSITION_DURATION = 900; // ms for the expand animation
 
+// Entrance animation stagger delays (ms)
+const ENTRANCE_BASE_DELAY = 100; // initial delay before first quadrant
+const ENTRANCE_STAGGER = 150; // delay between each quadrant
+const ENTRANCE_DURATION = 600; // fade-in duration per element
+
 export default function LandingGrid() {
   const router = useRouter();
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -341,6 +346,28 @@ export default function LandingGrid() {
     };
   }, [triggerExplosion, showCursor, hideCursor]);
 
+  // Clear entrance animations after they finish so scroll handler can control opacity
+  useEffect(() => {
+    const totalEntranceTime =
+      ENTRANCE_BASE_DELAY + 4 * ENTRANCE_STAGGER + ENTRANCE_DURATION + 50; // +50ms buffer
+
+    const timer = setTimeout(() => {
+      // Clear animation property from all animated elements so inline style.opacity works
+      if (hLineRef.current) hLineRef.current.style.animation = "none";
+      if (vLineRef.current) vLineRef.current.style.animation = "none";
+      if (centerRef.current) centerRef.current.style.animation = "none";
+      if (connectRef.current) {
+        connectRef.current.style.animation = "none";
+        connectRef.current.style.opacity = "0.6";
+      }
+      for (const ref of quadrantRefs.current) {
+        if (ref) ref.style.animation = "none";
+      }
+    }, totalEntranceTime);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Scroll-based fade: dim content and fade out borders as user scrolls down
   useEffect(() => {
     // Grab the footer element once
@@ -425,6 +452,9 @@ export default function LandingGrid() {
         className="absolute left-0 right-0 top-1/2 h-px bg-white/10 z-[1] pointer-events-none"
         style={{
           opacity: transition ? 0 : undefined,
+          animation: !transition
+            ? `landing-fade-in-simple ${ENTRANCE_DURATION}ms ease-out ${ENTRANCE_BASE_DELAY + 4 * ENTRANCE_STAGGER}ms both`
+            : undefined,
           transition: transition ? `opacity ${TRANSITION_DURATION * 0.4}ms ease-out` : undefined,
         }}
       />
@@ -434,6 +464,9 @@ export default function LandingGrid() {
         className="absolute top-0 bottom-0 left-1/2 w-px bg-white/10 z-[1] pointer-events-none"
         style={{
           opacity: transition ? 0 : undefined,
+          animation: !transition
+            ? `landing-fade-in-simple ${ENTRANCE_DURATION}ms ease-out ${ENTRANCE_BASE_DELAY + 4 * ENTRANCE_STAGGER}ms both`
+            : undefined,
           transition: transition ? `opacity ${TRANSITION_DURATION * 0.4}ms ease-out` : undefined,
         }}
       />
@@ -451,12 +484,15 @@ export default function LandingGrid() {
             onClick={(e) => handleQuadrantClick(e, i, q.href)}
             className={`group relative flex flex-col items-center justify-center gap-3 hover:bg-white/5 ${q.className}`}
             style={{
+              // Entrance animation with stagger
+              opacity: isTransitioning && !isActive ? 0 : undefined,
+              animation: !isTransitioning
+                ? `landing-fade-in ${ENTRANCE_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1) ${ENTRANCE_BASE_DELAY + i * ENTRANCE_STAGGER}ms both`
+                : undefined,
               // Transition only background-color for hover; opacity is driven by scroll handler directly
               transition: isTransitioning
                 ? `opacity ${TRANSITION_DURATION * 0.6}ms ease-out`
                 : "background-color 300ms",
-              // When transitioning: fade out non-active quadrants
-              opacity: isTransitioning && !isActive ? 0 : undefined,
             }}
           >
             <Icon
@@ -523,6 +559,9 @@ export default function LandingGrid() {
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none flex flex-col items-center gap-1"
         style={{
           opacity: transition ? 0 : undefined,
+          animation: !transition
+            ? `landing-fade-in ${ENTRANCE_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1) ${ENTRANCE_BASE_DELAY + ENTRANCE_STAGGER}ms both`
+            : undefined,
           transition: transition ? `opacity ${TRANSITION_DURATION * 0.5}ms ease-out` : undefined,
         }}
       >
@@ -544,7 +583,10 @@ export default function LandingGrid() {
         ref={connectRef}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
         style={{
-          opacity: transition ? 0 : 0.6,
+          opacity: transition ? 0 : undefined,
+          animation: !transition
+            ? `landing-fade-in-dim ${ENTRANCE_DURATION}ms ease-out ${ENTRANCE_BASE_DELAY + 4 * ENTRANCE_STAGGER}ms both`
+            : undefined,
           transition: transition ? `opacity ${TRANSITION_DURATION * 0.5}ms ease-out` : undefined,
         }}
       >

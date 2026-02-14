@@ -5,6 +5,82 @@ import { motion, AnimatePresence } from "motion/react";
 
 const sections = [
   {
+    title: "Mobile",
+    items: [
+      "React Native",
+      "Expo",
+      "iOS & Android",
+      "Native Navigation",
+      "Push Notifications",
+      "Offline Storage",
+      "App Store Deployment",
+      "Device APIs (Camera, Location)",
+      "Responsive Mobile UI",
+      "Deep Linking",
+    ],
+  },
+  {
+    title: "Frontend",
+    items: [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Component Architecture",
+      "Design Systems",
+      "Motion (Framer Motion / GSAP)",
+      "Accessibility (a11y)",
+      "Responsive Layouts",
+      "Performance Optimization",
+      "Figma Handoff",
+    ],
+  },
+  {
+    title: "Backend",
+    items: [
+      "Django",
+      "Node.js",
+      "REST APIs",
+      "Authentication + Authorization",
+      "API Design (pagination/versioning)",
+      "WebSockets / Realtime",
+      "Background Jobs / Workers",
+      "Caching (Redis)",
+      "Security (tokens, signatures)",
+      "Testing (API / integration)",
+    ],
+  },
+  {
+    title: "Systems",
+    items: [
+      "System Design",
+      "Microservices",
+      "Event-Driven Architecture",
+      "Message Queues",
+      "Load Balancing",
+      "Rate Limiting",
+      "Concurrency Patterns",
+      "Observability / Logging",
+      "Fault Tolerance",
+      "Networking (DNS, CORS, TLS)",
+    ],
+  },
+  {
+    title: "Data & Databases",
+    items: [
+      "PostgreSQL",
+      "Supabase (Postgres + Auth)",
+      "Schema Design",
+      "Migrations",
+      "Indexing & Query Optimization",
+      "SQL (joins, aggregates, CTEs)",
+      "Data Modeling",
+      "Storage Buckets",
+      "Realtime Database (pub/sub)",
+      "MongoDB",
+    ],
+  },
+  {
     title: "Integrations",
     items: [
       "Stripe (Checkout + Billing)",
@@ -15,53 +91,23 @@ const sections = [
       "Third-party APIs (rate limits, retries)",
       "OpenAPI / Swagger",
       "File Uploads (signed URLs)",
-      "Realtime integrations",
+      "Realtime Integrations",
       "Analytics Events (tracking)",
-    ],
-  },
-  {
-    title: "Back-End Systems",
-    items: [
-      "Django",
-      "Node.js",
-      "REST APIs",
-      "Authentication + Authorization",
-      "WebSockets / Realtime",
-      "Background Jobs / Workers",
-      "API Design (pagination/versioning)",
-      "Caching (Redis)",
-      "Security basics (tokens, signatures)",
-      "Testing (API / integration)",
-    ],
-  },
-  {
-    title: "Data & Databases",
-    items: [
-      "PostgreSQL",
-      "Supabase (Postgres + Auth)",
-      "Schema Design",
-      "Migrations",
-      "Indexing (basics)",
-      "SQL (joins, aggregates)",
-      "Data Modeling",
-      "Storage Buckets",
-      "Realtime Database (pub/sub)",
-      "MongoDB",
     ],
   },
   {
     title: "Cloud & DevOps",
     items: [
-      "AWS (S3 / IAM basics)",
+      "AWS (S3 / IAM)",
       "Docker",
       "CI/CD (GitHub Actions)",
       "Vercel Deployments",
       "Nginx / Reverse Proxy",
       "Environment Management",
-      "Monitoring / Logging (basics)",
-      "CORS / Networking basics",
-      "CDN concepts",
+      "Monitoring / Logging",
+      "CDN / Edge Computing",
       "Secrets Management",
+      "Infrastructure as Code",
     ],
   },
   {
@@ -72,27 +118,11 @@ const sections = [
       "RAG",
       "Prompt Engineering",
       "Agents / Tool Use",
-      "Model Evaluation (basic)",
+      "Model Evaluation",
       "LLM APIs (OpenAI / etc.)",
       "Retrieval Pipelines",
-      "Chunking + Reranking (basic)",
-      "Python ML tooling",
-    ],
-  },
-  {
-    title: "UI Engineering",
-    items: [
-      "React",
-      "Next.js",
-      "TypeScript",
-      "Design Systems",
-      "Component Architecture",
-      "Tailwind CSS",
-      "Motion (Framer Motion / GSAP)",
-      "Accessibility (a11y)",
-      "Responsive Layouts",
-      "Performance (basic)",
-      "Figma Handoff",
+      "Chunking + Reranking",
+      "Python ML Tooling",
     ],
   },
 ];
@@ -173,7 +203,7 @@ export default function ToolkitDrawer() {
         className="text-3xl font-semibold text-white"
         variants={itemVariants}
       >
-        [Under the Hood]
+        [Tech Stack]
       </motion.div>
 
       <div className="space-y-6">

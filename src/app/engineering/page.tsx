@@ -1,12 +1,33 @@
+"use client";
+
 import { Suspense } from "react";
+import { motion } from "motion/react";
 import EngineeringView from "@/components/engineering/EngineeringView";
+
+const pageVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  },
+};
 
 export default function EngineeringPage() {
   return (
     <main className="pt-24 px-6 pb-16 md:pb-6">
-      <Suspense fallback={<EngineeringLoadingSkeleton />}>
-        <EngineeringView />
-      </Suspense>
+      <motion.div
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+      >
+        <Suspense fallback={<EngineeringLoadingSkeleton />}>
+          <EngineeringView />
+        </Suspense>
+      </motion.div>
     </main>
   );
 }
