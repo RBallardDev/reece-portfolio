@@ -376,7 +376,7 @@ function DesktopContactRow({
       const safeWidth = viewportWidth - 4;
 
       let low = 16;
-      let high = 500;
+      let high = 800;
       let bestFit = 16;
 
       text.style.visibility = "hidden";
@@ -453,7 +453,7 @@ function DesktopContactRow({
         lineHeight: 0,
         margin: 0,
         padding: 0,
-        height: `${fontSize * 0.75}px`,
+        height: `${fontSize * 0.85}px`,
       }}
     >
       <span

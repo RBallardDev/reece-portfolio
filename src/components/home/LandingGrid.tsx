@@ -401,6 +401,19 @@ export default function LandingGrid() {
             ref={(el) => { quadrantRefs.current[i] = el; }}
             href={q.href}
             className={`group relative flex flex-col items-center justify-center gap-3 transition-colors duration-300 hover:bg-white/5 ${q.className}`}
+            /* Random color on hover — uncomment to re-enable
+            onMouseEnter={(e) => {
+              const h2 = e.currentTarget.querySelector("h2");
+              if (h2) {
+                const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+                h2.style.color = color;
+              }
+            }}
+            onMouseLeave={(e) => {
+              const h2 = e.currentTarget.querySelector("h2");
+              if (h2) h2.style.color = "";
+            }}
+            */
           >
             <Icon
               className="w-6 h-6 transition-colors duration-300 group-hover:text-white/60"
