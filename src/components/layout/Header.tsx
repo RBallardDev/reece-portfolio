@@ -12,9 +12,7 @@ export default function Header() {
   const isHome = pathname === "/";
   
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const [stickmanState, setStickmanState] = useState<"visible" | "exiting" | "hidden">(
-    isHome ? "visible" : "hidden"
-  );
+  const [stickmanState, setStickmanState] = useState<"visible" | "exiting" | "hidden">("hidden");
 
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,6 +58,9 @@ export default function Header() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [mobileMenuOpen]);
+
+  // Hide header entirely on the landing page
+  if (isHome) return null;
 
   return (
     <>

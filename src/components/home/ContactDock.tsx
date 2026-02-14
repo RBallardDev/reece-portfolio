@@ -24,8 +24,8 @@ const contactItems: ContactItem[] = [
     id: "email",
     label: "RBALLARD.R2@GMAIL.COM",
     color: "#FFD20F", // yellow
-    action: "copy",
-    value: "rballard.r2@gmail.com",
+    action: "link",
+    value: "mailto:rballard.r2@gmail.com?subject=Let's%20Connect!",
   },
   {
     id: "github",
@@ -64,15 +64,15 @@ const mobileItems: MobileItem[] = [
     id: "email-1",
     label: "RBALLARD.R2",
     color: "#FFD20F",
-    action: "copy",
-    value: "rballard.r2@gmail.com",
+    action: "link",
+    value: "mailto:rballard.r2@gmail.com?subject=Let's%20Connect!",
   },
   {
     id: "email-2",
     label: "@GMAIL.COM",
     color: "#FFD20F",
-    action: "copy",
-    value: "rballard.r2@gmail.com",
+    action: "link",
+    value: "mailto:rballard.r2@gmail.com?subject=Let's%20Connect!",
   },
   {
     id: "github",
@@ -376,7 +376,7 @@ function DesktopContactRow({
       const safeWidth = viewportWidth - 4;
 
       let low = 16;
-      let high = 500;
+      let high = 800;
       let bestFit = 16;
 
       text.style.visibility = "hidden";
@@ -453,7 +453,7 @@ function DesktopContactRow({
         lineHeight: 0,
         margin: 0,
         padding: 0,
-        height: `${fontSize * 0.75}px`,
+        height: `${fontSize * 0.85}px`,
       }}
     >
       <span
