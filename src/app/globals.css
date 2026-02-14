@@ -565,3 +565,54 @@ body::-webkit-scrollbar {
     animation: none;
   }
 }
+
+/* ============================================
+   Landing Page Quadrant Expand Transition
+   ============================================ */
+
+/* Box expands from quadrant position to fill viewport */
+@keyframes quadrant-box-expand {
+  to {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+  }
+}
+
+/* Content stays visible, holds, then fades out at the end */
+@keyframes quadrant-content-fade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes quadrant-box-expand {
+    0%, 100% {
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100dvh;
+    }
+  }
+
+  @keyframes quadrant-content-fade {
+    0%, 100% {
+      opacity: 0;
+    }
+  }
+}

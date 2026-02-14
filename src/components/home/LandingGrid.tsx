@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { User, Code, Palette, Languages } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -170,12 +170,22 @@ const CHARGE_DURATION = 1500; // ms to reach explosion
 const COOLDOWN_FADE_SPEED = 0.03; // how fast charge drains when off the center
 
 const SCROLL_THRESHOLD = 150; // px of scroll to reach full dim
+const TRANSITION_DURATION = 900; // ms for the expand animation
 
 export default function LandingGrid() {
+  const router = useRouter();
   const cursorRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
   const cooldownRef = useRef(false);
   const cursorVisibleRef = useRef(false);
+
+  // Page transition state
+  const [transition, setTransition] = useState<{
+    index: number;
+    href: string;
+    rect: { top: number; left: number; width: number; height: number };
+  } | null>(null);
+  const transitionRef = useRef(false);
   // Charge progress: 0 = white, 1 = red/explode
   const chargeRef = useRef(0);
   const overCenterRef = useRef(false);
@@ -196,6 +206,34 @@ export default function LandingGrid() {
     cursorVisibleRef.current = false;
     if (cursorRef.current) cursorRef.current.style.opacity = "0";
   }, []);
+
+  // Handle quadrant click — trigger expand animation, then navigate
+  const handleQuadrantClick = useCallback((e: React.MouseEvent, index: number, href: string) => {
+    e.preventDefault();
+    if (transitionRef.current) return;
+    transitionRef.current = true;
+
+    // Get the clicked quadrant's bounding rect
+    const el = quadrantRefs.current[index];
+    if (!el) {
+      router.push(href);
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    setTransition({
+      index,
+      href,
+      rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+    });
+
+    // Hide cursor during transition
+    hideCursor();
+
+    // Navigate after animation completes
+    setTimeout(() => {
+      router.push(href);
+    }, TRANSITION_DURATION);
+  }, [router, hideCursor]);
 
   const triggerExplosion = useCallback((x: number, y: number) => {
     if (cooldownRef.current) return;
@@ -385,35 +423,41 @@ export default function LandingGrid() {
       <div
         ref={hLineRef}
         className="absolute left-0 right-0 top-1/2 h-px bg-white/10 z-[1] pointer-events-none"
+        style={{
+          opacity: transition ? 0 : undefined,
+          transition: transition ? `opacity ${TRANSITION_DURATION * 0.4}ms ease-out` : undefined,
+        }}
       />
       {/* Vertical line */}
       <div
         ref={vLineRef}
         className="absolute top-0 bottom-0 left-1/2 w-px bg-white/10 z-[1] pointer-events-none"
+        style={{
+          opacity: transition ? 0 : undefined,
+          transition: transition ? `opacity ${TRANSITION_DURATION * 0.4}ms ease-out` : undefined,
+        }}
       />
 
       {/* Quadrant cells */}
       {quadrants.map((q, i) => {
         const Icon = q.icon;
+        const isTransitioning = transition !== null;
+        const isActive = transition?.index === i;
         return (
-          <Link
+          <a
             key={q.href}
-            ref={(el) => { quadrantRefs.current[i] = el; }}
+            ref={(el) => { quadrantRefs.current[i] = el as HTMLAnchorElement; }}
             href={q.href}
-            className={`group relative flex flex-col items-center justify-center gap-3 transition-colors duration-300 hover:bg-white/5 ${q.className}`}
-            /* Random color on hover — uncomment to re-enable
-            onMouseEnter={(e) => {
-              const h2 = e.currentTarget.querySelector("h2");
-              if (h2) {
-                const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-                h2.style.color = color;
-              }
+            onClick={(e) => handleQuadrantClick(e, i, q.href)}
+            className={`group relative flex flex-col items-center justify-center gap-3 hover:bg-white/5 ${q.className}`}
+            style={{
+              // Transition only background-color for hover; opacity is driven by scroll handler directly
+              transition: isTransitioning
+                ? `opacity ${TRANSITION_DURATION * 0.6}ms ease-out`
+                : "background-color 300ms",
+              // When transitioning: fade out non-active quadrants
+              opacity: isTransitioning && !isActive ? 0 : undefined,
             }}
-            onMouseLeave={(e) => {
-              const h2 = e.currentTarget.querySelector("h2");
-              if (h2) h2.style.color = "";
-            }}
-            */
           >
             <Icon
               className="w-6 h-6 transition-colors duration-300 group-hover:text-white/60"
@@ -429,12 +473,59 @@ export default function LandingGrid() {
             <p className="text-sm text-white/40 transition-colors duration-300 group-hover:text-white/60 max-w-[200px] text-center leading-relaxed">
               {q.description}
             </p>
-          </Link>
+          </a>
         );
       })}
 
+      {/* Expanding quadrant overlay — the actual section expands to fill the screen */}
+      {transition && (() => {
+        const q = quadrants[transition.index];
+        const Icon = q.icon;
+        return (
+          <div
+            className="fixed z-[100] pointer-events-none flex flex-col items-center justify-center gap-3 bg-black"
+            style={{
+              top: transition.rect.top,
+              left: transition.rect.left,
+              width: transition.rect.width,
+              height: transition.rect.height,
+              animation: `quadrant-box-expand ${TRANSITION_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`,
+            }}
+          >
+            <div
+              className="flex flex-col items-center justify-center gap-3"
+              style={{
+                animation: `quadrant-content-fade ${TRANSITION_DURATION}ms ease-out forwards`,
+              }}
+            >
+              <Icon
+                className="w-6 h-6"
+                style={{ color: "#9E9E9E" }}
+                strokeWidth={1.5}
+              />
+              <h2
+                className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight"
+                style={q.style}
+              >
+                {q.title}
+              </h2>
+              <p className="text-sm text-white/40 max-w-[200px] text-center leading-relaxed">
+                {q.description}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Center info — positioned at the intersection of all 4 quadrants */}
-      <div ref={centerRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none flex flex-col items-center gap-1">
+      <div
+        ref={centerRef}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none flex flex-col items-center gap-1"
+        style={{
+          opacity: transition ? 0 : undefined,
+          transition: transition ? `opacity ${TRANSITION_DURATION * 0.5}ms ease-out` : undefined,
+        }}
+      >
         <p className="text-xs uppercase tracking-widest text-white/50">
           Los Angeles, CA | Remote
         </p>
@@ -449,7 +540,14 @@ export default function LandingGrid() {
       </div>
 
       {/* Connect hint — centered at the bottom */}
-      <div ref={connectRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{ opacity: 0.6 }}>
+      <div
+        ref={connectRef}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+        style={{
+          opacity: transition ? 0 : 0.6,
+          transition: transition ? `opacity ${TRANSITION_DURATION * 0.5}ms ease-out` : undefined,
+        }}
+      >
         <p className="text-xs uppercase tracking-widest text-white">
           connect ↓
         </p>
