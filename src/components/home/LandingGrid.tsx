@@ -132,31 +132,27 @@ const quadrants: QuadrantConfig[] = [
     description: "Who I am and what drives me.",
     href: "/me",
     icon: User,
-    // Top-left: right border + bottom border
-    className: "border-r border-b border-white/10",
+    className: "",
   },
   {
     title: "Engineering",
     description: "Software projects and technical work.",
     href: "/engineering",
     icon: Code,
-    // Top-right: bottom border only
-    className: "border-b border-white/10",
+    className: "",
   },
   {
     title: "Creative",
     description: "Design, photography, and visual experiments.",
     href: "/creative",
     icon: Palette,
-    // Bottom-left: right border only
-    className: "border-r border-white/10",
+    className: "",
   },
   {
     title: "日本語",
     description: "My journey learning Japanese.",
     href: "/japanese",
     icon: Languages,
-    // Bottom-right: no extra borders
     className: "",
     style: { fontFamily: '"Noto Sans JP", system-ui, sans-serif' },
   },
@@ -173,6 +169,8 @@ function lerpColor(r1: number, g1: number, b1: number, r2: number, g2: number, b
 const CHARGE_DURATION = 1500; // ms to reach explosion
 const COOLDOWN_FADE_SPEED = 0.03; // how fast charge drains when off the center
 
+const SCROLL_THRESHOLD = 150; // px of scroll to reach full dim
+
 export default function LandingGrid() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
@@ -182,6 +180,12 @@ export default function LandingGrid() {
   const chargeRef = useRef(0);
   const overCenterRef = useRef(false);
   const chargeStartRef = useRef<number | null>(null);
+
+  // Refs for scroll-based fade
+  const hLineRef = useRef<HTMLDivElement>(null);
+  const vLineRef = useRef<HTMLDivElement>(null);
+  const quadrantRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const connectRef = useRef<HTMLDivElement>(null);
 
   // Directly set cursor opacity on the DOM — no React re-render
   const showCursor = useCallback(() => {
@@ -299,6 +303,67 @@ export default function LandingGrid() {
     };
   }, [triggerExplosion, showCursor, hideCursor]);
 
+  // Scroll-based fade: dim content and fade out borders as user scrolls down
+  useEffect(() => {
+    // Grab the footer element once
+    const footer = document.querySelector("[data-landing-footer]") as HTMLElement | null;
+
+    const updateScrollFade = (scrollY: number) => {
+      const progress = Math.min(scrollY / SCROLL_THRESHOLD, 1);
+
+      // Borders: fade to 0
+      const borderOpacity = 1 - progress;
+      if (hLineRef.current) hLineRef.current.style.opacity = String(borderOpacity);
+      if (vLineRef.current) vLineRef.current.style.opacity = String(borderOpacity);
+
+      // Quadrant content: dim to 0.3
+      const contentOpacity = 1 - progress * 0.7;
+      for (const ref of quadrantRefs.current) {
+        if (ref) ref.style.opacity = String(contentOpacity);
+      }
+
+      // Center info: dim along with quadrants
+      if (centerRef.current) centerRef.current.style.opacity = String(contentOpacity);
+
+      // Connect hint: brightens as you scroll down (0.6 → 1)
+      if (connectRef.current) connectRef.current.style.opacity = String(0.6 + progress * 0.4);
+
+      // Footer: fades in on a delayed range (starts at 50px, full at 250px)
+      const footerStart = 125;
+      const footerEnd = 300;
+      const footerProgress = Math.min(Math.max((scrollY - footerStart) / (footerEnd - footerStart), 0), 1);
+      if (footer) footer.style.opacity = String(footerProgress);
+    };
+
+    // Try hooking into Lenis for smooth scroll sync
+    const tryLenis = () => {
+      const lenis = window.lenis;
+      if (lenis) {
+        const handler = ({ scroll }: { scroll: number }) => updateScrollFade(scroll);
+        lenis.on("scroll", handler);
+        // Run once with current position
+        updateScrollFade(lenis.scroll ?? 0);
+        return () => lenis.off("scroll", handler);
+      }
+      return undefined;
+    };
+
+    // Lenis may not be ready yet — poll briefly
+    let cleanup = tryLenis();
+    if (!cleanup) {
+      const interval = setInterval(() => {
+        cleanup = tryLenis();
+        if (cleanup) clearInterval(interval);
+      }, 100);
+      return () => {
+        clearInterval(interval);
+        cleanup?.();
+      };
+    }
+
+    return cleanup;
+  }, []);
+
   return (
     <section className="relative h-dvh w-full grid grid-cols-2 grid-rows-2">
       {/* Cursor follower circle */}
@@ -315,12 +380,25 @@ export default function LandingGrid() {
           opacity: 0,
         }}
       />
+      {/* Divider lines — separate elements so we can fade them independently */}
+      {/* Horizontal line */}
+      <div
+        ref={hLineRef}
+        className="absolute left-0 right-0 top-1/2 h-px bg-white/10 z-[1] pointer-events-none"
+      />
+      {/* Vertical line */}
+      <div
+        ref={vLineRef}
+        className="absolute top-0 bottom-0 left-1/2 w-px bg-white/10 z-[1] pointer-events-none"
+      />
+
       {/* Quadrant cells */}
-      {quadrants.map((q) => {
+      {quadrants.map((q, i) => {
         const Icon = q.icon;
         return (
           <Link
             key={q.href}
+            ref={(el) => { quadrantRefs.current[i] = el; }}
             href={q.href}
             className={`group relative flex flex-col items-center justify-center gap-3 transition-colors duration-300 hover:bg-white/5 ${q.className}`}
           >
@@ -357,12 +435,12 @@ export default function LandingGrid() {
         </p>
       </div>
 
-      {/* Scroll hint — uncomment to re-enable */}
-      {/* <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-        <p className="text-xs uppercase tracking-widest text-white/40 animate-bounce">
-          scroll ↓
+      {/* Connect hint — centered at the bottom */}
+      <div ref={connectRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{ opacity: 0.6 }}>
+        <p className="text-xs uppercase tracking-widest text-white">
+          connect ↓
         </p>
-      </div> */}
+      </div>
     </section>
   );
 }

@@ -24,8 +24,8 @@ const contactItems: ContactItem[] = [
     id: "email",
     label: "RBALLARD.R2@GMAIL.COM",
     color: "#FFD20F", // yellow
-    action: "copy",
-    value: "rballard.r2@gmail.com",
+    action: "link",
+    value: "mailto:rballard.r2@gmail.com?subject=Let's%20Connect!",
   },
   {
     id: "github",
@@ -64,15 +64,15 @@ const mobileItems: MobileItem[] = [
     id: "email-1",
     label: "RBALLARD.R2",
     color: "#FFD20F",
-    action: "copy",
-    value: "rballard.r2@gmail.com",
+    action: "link",
+    value: "mailto:rballard.r2@gmail.com?subject=Let's%20Connect!",
   },
   {
     id: "email-2",
     label: "@GMAIL.COM",
     color: "#FFD20F",
-    action: "copy",
-    value: "rballard.r2@gmail.com",
+    action: "link",
+    value: "mailto:rballard.r2@gmail.com?subject=Let's%20Connect!",
   },
   {
     id: "github",
