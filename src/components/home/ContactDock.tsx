@@ -546,7 +546,7 @@ export default function ContactDock() {
   // Mobile layout - email block + 3 link lines
   if (isMobile) {
     const linkItems = mobileItems.filter(
-      (item) => item.action === "link"
+      (item) => item.action === "link" && !item.id.startsWith("email")
     );
 
     return (
