@@ -51,21 +51,6 @@ const sections = [
     ],
   },
   {
-    title: "Systems",
-    items: [
-      "System Design",
-      "Microservices",
-      "Event-Driven Architecture",
-      "Message Queues",
-      "Load Balancing",
-      "Rate Limiting",
-      "Concurrency Patterns",
-      "Observability / Logging",
-      "Fault Tolerance",
-      "Networking (DNS, CORS, TLS)",
-    ],
-  },
-  {
     title: "Data & Databases",
     items: [
       "PostgreSQL",

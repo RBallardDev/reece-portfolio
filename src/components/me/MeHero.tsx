@@ -50,35 +50,35 @@ const Paragraph = ({
       onMouseEnter={isMobile ? undefined : onHoverStart}
       onMouseLeave={isMobile ? undefined : onHoverEnd}
     >
-      I love to{" "}
+      I{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(0)}>
         build
       </span>{" "}
-      products that feel simple and steady. The goal is always to{" "}
+      things because I genuinely can&apos;t stop. What started as a pivot from a career-ending basketball injury became a full-blown{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(1)}>
+        obsession
+      </span>
+      . I skip plans, lose sleep, and spend hours chasing the smallest{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(2)}>
+        details
+      </span>{" "}
+      — not because I have to, but because I love the process. I&apos;ll{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(3)}>
         ship
       </span>{" "}
-      with clarity and calm pace. I obsess over{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(2)}>
-        systems
-      </span>{" "}
-      that reduce friction between people and code.{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(3)}>
-        Design
-      </span>{" "}
-      matters because it channels{" "}
+      a complete app in weeks if that&apos;s what the moment demands. I work across mobile, web, backend, AI — honestly any{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(4)}>
-        curiosity
+        system
       </span>{" "}
-      into things people actually use. I care about{" "}
+      I can get my hands on. My creative hobbies keep me sharp and my athlete mentality keeps me{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(5)}>
-        craft
-      </span>{" "}
-      and keeping{" "}
+        relentless
+      </span>
+      . I just want to build things that feel perfect and be the best{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(6)}>
-        momentum
+        teammate
       </span>{" "}
-      so we keep learning.
+      in the room.
     </p>
   );
 };
@@ -190,19 +190,11 @@ export default function MeHero() {
         </div>
       </div>
 
-      {/* Content row - paragraph left, photo right */}
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:items-start">
-        <div>
-          <Paragraph
-            highlightColors={highlightColors}
-            onHoverStart={randomizeHighlights}
-            onHoverEnd={resetHighlights}
-            isMobile={isMobile}
-          />
-        </div>
-
-        <div className="space-y-2 md:flex md:flex-col md:items-end">
-          <div className="w-full max-w-[480px] md:ml-auto aspect-[4/5] rounded-2xl border border-white/10 bg-white/5 overflow-hidden relative">
+      {/* Content — float layout so text wraps underneath image on desktop */}
+      <div className="overflow-hidden">
+        {/* Mobile: image below text (stacked) / Desktop: floated right */}
+        <div className="mb-8 md:mb-0 md:float-right md:ml-10 md:w-[45%] lg:w-[40%] space-y-2 order-first md:order-none">
+          <div className="w-full aspect-[4/5] rounded-2xl border border-white/10 bg-white/5 overflow-hidden relative">
             <Image
               key={photos[photoIndex].src}
               src={photos[photoIndex].src}
@@ -213,10 +205,17 @@ export default function MeHero() {
               priority
             />
           </div>
-          <p className="text-xs text-white/50 text-left w-full max-w-[480px] md:ml-auto italic">
+          <p className="text-xs text-white/50 text-left italic">
             New York City — East Village (2025) | Shot by Nicole Lenzen | Fun fact: eel rolls are my favorite.
           </p>
         </div>
+
+        <Paragraph
+          highlightColors={highlightColors}
+          onHoverStart={randomizeHighlights}
+          onHoverEnd={resetHighlights}
+          isMobile={isMobile}
+        />
       </div>
     </section>
   );
