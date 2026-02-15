@@ -221,44 +221,21 @@ function FullWidthText({
 }
 
 // Mobile email block - both lines as one clickable unit
-function MobileEmailBlock({
-  onCopy,
-  copiedId,
-}: {
-  onCopy: (value: string, id: string) => void;
-  copiedId: string | null;
-}) {
+function MobileEmailBlock() {
   const handleMouseEnter = useCallback((e: React.MouseEvent) => {
     spawnSparkles(e.clientX, e.clientY);
   }, []);
 
-  const handleClick = useCallback(
-    async (e: React.MouseEvent) => {
-      e.preventDefault();
-      onCopy("rballard.r2@gmail.com", "email");
-    },
-    [onCopy]
-  );
-
-  const isCopied = copiedId === "email";
-
   return (
-    <button
-      type="button"
-      aria-label="Copy email to clipboard"
+    <a
+      href="mailto:rballard.r2@gmail.com?subject=Let's%20Connect!"
+      aria-label="Send email to Reece Ballard"
       className="cursor-pointer block hover:opacity-80 transition-opacity duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
     >
-      {isCopied ? (
-        <FullWidthText label="COPIED!" color="#FFD20F" />
-      ) : (
-        <>
-          <FullWidthText label="RBALLARD.R2" color="#FFD20F" />
-          <FullWidthText label="@GMAIL.COM" color="#FFD20F" />
-        </>
-      )}
-    </button>
+      <FullWidthText label="RBALLARD.R2" color="#FFD20F" />
+      <FullWidthText label="@GMAIL.COM" color="#FFD20F" />
+    </a>
   );
 }
 
@@ -551,7 +528,7 @@ export default function ContactDock() {
 
     return (
       <div className="flex flex-col">
-        <MobileEmailBlock onCopy={handleCopy} copiedId={copiedId} />
+        <MobileEmailBlock />
         {linkItems.map((item) => (
           <MobileLinkLine key={item.id} item={item} />
         ))}
