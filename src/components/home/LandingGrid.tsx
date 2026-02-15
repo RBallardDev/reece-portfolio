@@ -581,7 +581,7 @@ export default function LandingGrid() {
       {/* Connect hint — centered at the bottom */}
       <div
         ref={connectRef}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
         style={{
           opacity: transition ? 0 : undefined,
           animation: !transition
@@ -590,9 +590,22 @@ export default function LandingGrid() {
           transition: transition ? `opacity ${TRANSITION_DURATION * 0.5}ms ease-out` : undefined,
         }}
       >
-        <p className="text-xs uppercase tracking-widest text-white">
+        <button
+          type="button"
+          onClick={() => {
+            const footer = document.querySelector("[data-landing-footer]");
+            if (footer) {
+              if (window.lenis) {
+                window.lenis.scrollTo(footer as HTMLElement, { duration: 1.2 });
+              } else {
+                footer.scrollIntoView({ behavior: "smooth" });
+              }
+            }
+          }}
+          className="text-xs uppercase tracking-widest text-white cursor-pointer"
+        >
           connect ↓
-        </p>
+        </button>
       </div>
     </section>
   );
