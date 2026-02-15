@@ -2,6 +2,7 @@ import LandingGrid from "@/components/home/LandingGrid";
 // import FeaturedWorkRow from "@/components/home/FeaturedWorkRow";
 import ContactDock from "@/components/home/ContactDock";
 import SparkleWordmark from "@/components/home/SparkleWordmark";
+import MobileFooterCTA from "@/components/home/MobileFooterCTA";
 
 export default function Home() {
   return (
@@ -15,7 +16,9 @@ export default function Home() {
       </main> */}
 
       {/* Footer area - Contact dock + wordmark */}
-      <footer data-landing-footer className="pt-32 w-screen" style={{ opacity: 0 }}>
+      <footer data-landing-footer className="pt-16 sm:pt-32 w-screen" style={{ opacity: 0 }}>
+        {/* Mobile-only CTA text above contact links */}
+        <MobileFooterCTA />
         <ContactDock />
         <SparkleWordmark />
       </footer>
