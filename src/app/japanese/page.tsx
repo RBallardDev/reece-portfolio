@@ -77,7 +77,7 @@ export default function JapanesePage() {
                     fontFamily: '"Noto Sans JP", system-ui, sans-serif',
                   }}
                 >
-                  はじめまして。バラード・リースです。ロサンゼルスで生まれて、今もロサンゼルスに住んでいます。ソフトウェアエンジニアとして働いていて、この仕事が大好きです。趣味はファッションと車と音楽とバスケットボールです。日本語を勉強している理由は二つあります。一つ目は、子どものとき、小学校二年生のときに、両親が私を日本人のバスケットボールリーグに入れてくれたことです。小さいころから日本の文化に触れて、日本人や日本の文化のまわりで育ちました。そして大きくなって大学に行ったころ、家族のようなチームメイトとその両親に、日本語を勉強してみたらと言われました。二つ目は、日本に家族がいることです。東京と沖縄と福岡にいとこがいて、もっとよく話せるようになりたいです。
+                  はじめまして。バラード・リースです。ロサンゼルスで生まれて、今もロサンゼルスに住んでいます。ソフトウェアエンジニアとして働いていて、この仕事が大好きです。趣味はファッションと車と音楽とバスケットボールです。日本語を勉強している理由は二つあります。一つ目は、子どものとき、小学校二年生のときに、両親が私を日本人のバスケットボールリーグに入れてくれたことです。小さいころから日本の文化に触れて、日本人や日本の文化のまわりで育ちました。そして大きくなって大学に行ったとき、日本語を副専攻にすることにしました。二つ目は、日本に家族がいることです。東京と沖縄と福岡にいとこがいて、もっとよく話せるようになりたいです。よろしくお願いします。
                 </p>
               </div>
 
@@ -87,7 +87,7 @@ export default function JapanesePage() {
                   className="text-xl leading-relaxed text-white/80 font-medium"
                   style={{ fontFamily: '"Noto Sans JP", system-ui, sans-serif' }}
                 >
-                  はじめまして。バラード・リースです。ロサンゼルスで生まれて、今もロサンゼルスに住んでいます。ソフトウェアエンジニアとして働いていて、この仕事が大好きです。趣味はファッションと車と音楽とバスケットボールです。日本語を勉強している理由は二つあります。一つ目は、子どものとき、小学校二年生のときに、両親が私を日本人のバスケットボールリーグに入れてくれたことです。小さいころから日本の文化に触れて、日本人や日本の文化のまわりで育ちました。そして大きくなって大学に行ったころ、家族のようなチームメイトとその両親に、日本語を勉強してみたらと言われました。二つ目は、日本に家族がいることです。東京と沖縄と福岡にいとこがいて、もっとよく話せるようになりたいです。
+                  はじめまして。バラード・リースです。ロサンゼルスで生まれて、今もロサンゼルスに住んでいます。ソフトウェアエンジニアとして働いていて、この仕事が大好きです。趣味はファッションと車と音楽とバスケットボールです。日本語を勉強している理由は二つあります。一つ目は、子どものとき、小学校二年生のときに、両親が私を日本人のバスケットボールリーグに入れてくれたことです。小さいころから日本の文化に触れて、日本人や日本の文化のまわりで育ちました。そして大きくなって大学に行ったとき、日本語を副専攻にすることにしました。二つ目は、日本に家族がいることです。東京と沖縄と福岡にいとこがいて、もっとよく話せるようになりたいです。よろしくお願いします。
                 </p>
               </div>
             </motion.div>
@@ -100,7 +100,7 @@ export default function JapanesePage() {
               exit="exit"
             >
               <p className="text-xl sm:text-2xl leading-relaxed text-white/80 font-medium max-w-3xl">
-                Hi, my name is Reece Ballard. I was born in Los Angeles, and I still live in Los Angeles now. I work as a software engineer, and I really love it. My hobbies include fashion, cars, music, and basketball. I decided to study Japanese for two reasons. First, when I was a kid, my parents put me in a Japanese basketball league in second grade. This introduced me to Japanese culture at a young age, and I grew up around Japanese people and culture. Later, when I got older and went to college, my teammates and their parents, who feel like family to me, encouraged me to learn Japanese. Second, I have family in Japan. I have cousins in Tokyo, Okinawa, and Fukuoka, and I want to connect with them better.
+                Hi, my name is Reece Ballard. I was born in Los Angeles, and I live in Los Angeles now. I work as a software engineer, and I really love it. My hobbies include fashion, cars, music, and basketball. I decided to study Japanese for two reasons. First, when I was a kid, my parents put me in a Japanese basketball league in second grade. This introduced me to Japanese culture at a young age, and I grew up around Japanese people and culture. Later, when I got older and went to college, I decided to minor in Japanese. Second, I have family in Japan. I have cousins in Tokyo, Okinawa, and Fukuoka, and I want to connect with them better.
               </p>
             </motion.div>
           )}
