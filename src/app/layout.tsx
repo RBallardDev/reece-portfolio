@@ -18,6 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={neueMontreal.variable}>
+      <head>
+        {/* Preload Me page photos so they're cached before the user navigates there */}
+        <link rel="preload" href="/images/me/eating1.jpg" as="image" />
+        <link rel="preload" href="/images/me/eating2.jpg" as="image" />
+      </head>
       <body
         suppressHydrationWarning
         className="bg-black text-white font-sans antialiased"
