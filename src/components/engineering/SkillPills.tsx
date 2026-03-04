@@ -11,7 +11,7 @@ export default function SkillPills({
 }: SkillPillsProps) {
   return (
     <div className="flex flex-wrap gap-2">
-      {skills.map((skill) => {
+      {skills.filter((s) => !s.hidden).map((skill) => {
         const isActive = activeSkillIds?.includes(skill.id);
         const color = isActive ? activeSkillColors?.[skill.id] : undefined;
 
