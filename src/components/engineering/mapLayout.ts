@@ -67,7 +67,7 @@ export function buildGraph(config: LayoutConfig): { nodes: GraphNode[]; edges: G
         kind: "project",
         id: proj.id,
         label: proj.title,
-        subtitle: proj.category,
+        subtitle: proj.categoryLabel ?? proj.category,
       });
       nodeKeySet.add(key);
     }

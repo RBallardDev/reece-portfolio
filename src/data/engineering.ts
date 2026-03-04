@@ -33,9 +33,11 @@ export type Project = {
   slug: string;
   title: string;
   category: ProjectCategory;
+  categoryLabel?: string;
   summary: string;
   description?: string;
   coverImage?: string;
+  coverBg?: string;
   skillIds: string[];
   highlights: string[];
   links?: Link[];
@@ -204,7 +206,7 @@ const projects: Project[] = [
     category: "web",
     summary: "Community-driven marketing site with events, blog CMS, and interactive cork-board wall.",
     description:
-      "I built the marketing site for WeBeGiggin', a community-first gig platform, using Next.js 15 App Router with server-first rendering and Supabase as the full backend (auth, Postgres, storage). The site features a community cork-board wall where users post sticky notes with seeded-random layouts, a date-fns-powered event calendar with auth-gated event creation, and a blog CMS with slug-based routing and server-action mutations. All reads use RLS-safe Supabase queries from server components, keeping the client bundle lean.",
+      "Built the marketing site for WeBeGiggin', a community-first gig platform, using Next.js 15 App Router with server-first rendering and Supabase as the full backend (auth, Postgres, storage). The site features a community cork-board wall where users post sticky notes with seeded-random layouts, a date-fns-powered event calendar with auth-gated event creation, and a blog CMS with slug-based routing and server-action mutations. All reads use RLS-safe Supabase queries from server components, keeping the client bundle lean.",
     coverImage: "/images/projects/wbg-web/cover1.png",
     skillIds: [
       "typescript",
@@ -225,6 +227,9 @@ const projects: Project[] = [
       "Shipped a blog CMS with slug-based dynamic routing, server-action-powered post creation/editing, and cover image uploads to Supabase Storage",
       "Engineered smooth-scroll UX with Lenis, intersection-observer animations, CSS marquee effects, and a scroll-aware header with dynamic contrast",
     ],
+    links: [
+      { label: "Live Site", href: "https://www.webegiggin.com/" },
+    ],
     relatedExperienceIds: ["wbg"],
   },
   {
@@ -232,9 +237,10 @@ const projects: Project[] = [
     slug: "wbg-app",
     title: "WeBeGiggin'",
     category: "mobile",
+    coverImage: "/images/projects/wbg-app/cover.png",
     summary: "A React Native gig economy platform with real-time messaging, AI career coaching, and a social feed.",
     description:
-      "I built a mobile-first gig economy community app connecting freelancers with opportunities. The app features a social feed with pagination and optimistic likes, a real-time messaging system powered by Supabase Realtime with unread tracking, an AI career assistant backed by a Python FastAPI server using GPT-4o with function calling to update user profiles conversationally, and a full job/event discovery system. The 26-table PostgreSQL schema includes RLS policies, full-text search vectors, and a normalized conversation model I designed from scratch.",
+      "Built a mobile-first gig economy community app connecting freelancers with opportunities. The app features a social feed with pagination and optimistic likes, a real-time messaging system powered by Supabase Realtime with unread tracking, an AI career assistant backed by a Python FastAPI server using GPT-4o with function calling to update user profiles conversationally, and a full job/event discovery system. The 26-table PostgreSQL schema includes RLS policies, full-text search vectors, and a normalized conversation model I designed from scratch.",
     skillIds: [
       "javascript",
       "react-native",
@@ -273,7 +279,7 @@ const projects: Project[] = [
     category: "web",
     summary: "AI-powered rap lyric generator with a section-aware editor and beat library.",
     description:
-      "I built a full-stack PWA for generating and editing rap lyrics using OpenAI, with a custom contentEditable editor that features a Matrix-style binary reveal animation and section-aware tag parsing. The app includes artist style profiling (paste reference lyrics → AI generates a structured style card for prompt injection), a beat library with client-side BPM/key detection via Essentia.js WASM, and a lock/directive system that lets users constrain AI regeneration around preserved bars. Backed by Supabase for auth and per-user data with row-level security.",
+      "Built a full-stack PWA for generating and editing rap lyrics using OpenAI, with a custom contentEditable editor that features a Matrix-style binary reveal animation and section-aware tag parsing. The app includes artist style profiling (paste reference lyrics → AI generates a structured style card for prompt injection), a beat library with client-side BPM/key detection via Essentia.js WASM, and a lock/directive system that lets users constrain AI regeneration around preserved bars. Backed by Supabase for auth and per-user data with row-level security.",
     skillIds: [
       "typescript",
       "react",
@@ -302,9 +308,12 @@ const projects: Project[] = [
     slug: "open-planner",
     title: "Open Planner",
     category: "web",
+    categoryLabel: "Mobile + Web",
+    coverImage: "/images/projects/open-planner/cover.png",
+    coverBg: "#0f1c2e",
     summary: "AI-powered student planner — React web app, SwiftUI iOS client, and Node.js backend across three codebases.",
     description:
-      "I built Open Planner end-to-end: a React web app, a native SwiftUI iOS client, and a Node.js/Express backend. Students upload course syllabi and an AI pipeline (AWS Lambda + LibreOffice) extracts assignments, exams, and deadlines into a unified calendar. The platform features real-time group and direct messaging over Socket.IO, a multi-tier subscription system spanning Stripe, Apple IAP via StoreKit 2, and parent/family plans with seat-based claim codes, and a custom drag-and-drop calendar with Google/Outlook/Apple export. The backend runs on AWS Elastic Beanstalk with PostgreSQL, Cognito auth, S3 file storage, and SES transactional email.",
+      "Built Open Planner end-to-end: a React web app, a native SwiftUI iOS client, and a Node.js/Express backend. Students upload course syllabi and an AI pipeline (AWS Lambda + LibreOffice) extracts assignments, exams, and deadlines into a unified calendar. The platform features real-time group and direct messaging over Socket.IO, a multi-tier subscription system spanning Stripe, Apple IAP via StoreKit 2, and parent/family plans with seat-based claim codes, and a custom drag-and-drop calendar with Google/Outlook/Apple export. The backend runs on AWS Elastic Beanstalk with PostgreSQL, Cognito auth, S3 file storage, and SES transactional email.",
     skillIds: [
       "typescript",
       "react",
@@ -347,9 +356,16 @@ const projects: Project[] = [
     slug: "pickl",
     title: "Pickl",
     category: "web",
+    coverImage: "/images/projects/pickl/cover.png",
     summary: "Full-stack movie/TV recommendation platform with group-based collaborative filtering.",
     description:
-      "I built Pickl, a personalized movie and TV show recommendation engine that scores titles using Euclidean distance between user demographic vectors and title interest-composition matrices. Users complete an onboarding questionnaire that maps to binary feature vectors across 18 demographic/preference segments, then receive ranked recommendations filtered by their watchlist and viewing history. I also designed a group recommendation system where members' individual scores are aggregated via RobustScaler normalization, letting friend groups find shows everyone will enjoy.",
+      "Built Pickl, a personalized movie and TV show recommendation engine that scores titles using Euclidean distance between user demographic vectors and title interest-composition matrices. Users complete an onboarding questionnaire that maps to binary feature vectors across 18 demographic/preference segments, then receive ranked recommendations filtered by their watchlist and viewing history. I also designed a group recommendation system where members' individual scores are aggregated via RobustScaler normalization, letting friend groups find shows everyone will enjoy.",
+    media: [
+      { kind: "image", src: "/images/projects/pickl/cover.png", alt: "Pickl landing page" },
+      { kind: "image", src: "/images/projects/pickl/01.png", alt: "Pickl recommendations dashboard" },
+      { kind: "image", src: "/images/projects/pickl/02.png", alt: "Pickl watchlist interface" },
+      { kind: "image", src: "/images/projects/pickl/03.png", alt: "Pickl already watched list" },
+    ],
     skillIds: [
       "python",
       "django",
@@ -383,39 +399,51 @@ const projects: Project[] = [
   {
     id: "armed",
     slug: "armed",
-    title: "ARMed",
+    title: "ARMED",
     category: "mobile",
-    summary: "Youth baseball arm health tracker with sports-science workload modeling, shipped to the iOS App Store.",
+    coverImage: "/images/projects/armed/cover.png",
+    summary: "Shipped a vibe-coded youth baseball web app to the iOS App Store with IAP, payments, and team subscriptions.",
     description:
-      "I built ARMed, an iOS app that helps youth baseball players (ages 8–14), coaches, and parents track throwing workload and arm health. The core engine uses EWMA-based acute:chronic workload ratios from sports science research to generate daily readiness scores and Pitch Smart–compliant rest recommendations. I designed a multi-role system (player/coach/parent) backed by Supabase with RLS policies and Deno edge functions, and integrated RevenueCat for Apple IAP subscriptions alongside a team-based unlock code model for $750/year team plans.",
+      "I was contracted to take a client's Lovable-generated (vibe-coded) React web app — a youth baseball arm health tracker — and ship it as a real iOS product. I wrapped the SPA with Capacitor, fixed critical auth and onboarding bugs, integrated RevenueCat for Apple IAP subscriptions, built a multi-source entitlement system, wrote Deno edge functions for account deletion and team plan activation via Stripe webhooks, and handled the full App Store submission process including Apple compliance for payments and privacy.",
+    media: [
+      { kind: "image", src: "/images/projects/armed/01.png", alt: "ARMED hero" },
+      { kind: "image", src: "/images/projects/armed/02.png", alt: "ARMED readiness dashboard" },
+      { kind: "image", src: "/images/projects/armed/03.png", alt: "ARMED trends and workload" },
+      { kind: "image", src: "/images/projects/armed/04.png", alt: "ARMED learn section" },
+      { kind: "image", src: "/images/projects/armed/05.png", alt: "ARMED tournament guidance" },
+      { kind: "image", src: "/images/projects/armed/06.png", alt: "ARMED activity logging" },
+      { kind: "image", src: "/images/projects/armed/07.png", alt: "ARMED coach dashboard" },
+      { kind: "image", src: "/images/projects/armed/08.png", alt: "ARMED subscription" },
+    ],
     skillIds: [
       "typescript",
       "react",
-      "vite",
-      "tailwindcss",
-      "shadcn-ui",
+      "capacitor",
       "supabase",
       "postgresql",
-      "capacitor",
       "revenuecat",
+      "apple-iap",
+      "stripe",
       "deno",
+      "tailwindcss",
+      "vite",
+      "xcode",
       "react-router",
       "tanstack-react-query",
-      "recharts",
-      "react-hook-form",
       "zod",
+      "react-hook-form",
+      "recharts",
       "radix-ui",
+      "shadcn-ui",
       "date-fns",
-      "xcode",
-      "apple-iap",
     ],
     highlights: [
-      "Built a custom workload engine using EWMA-based acute:chronic ratios across 4 age bands, converting game pitches, defense, catching, bullpen, and practice into Throwing Load Units (TLUs) for daily readiness scoring",
-      "Implemented Pitch Smart compliance logic with official rest-day thresholds, recovery window calculations, and multi-day graduated score penalties tied to pitch counts",
-      "Designed a three-ring WHOOP-inspired dashboard displaying readiness, sleep support, and load ratio with animated SVG rings and score breakdowns",
-      "Architected a role-based data model (player/coach/parent) with Supabase Row-Level Security, 9 Deno edge functions, and team management via 6-character join codes",
-      "Integrated RevenueCat for Apple IAP subscriptions (monthly/yearly + 7-day trial) alongside off-app team unlock codes, with a unified entitlement hook merging three premium sources",
-      "Shipped to the iOS App Store via Capacitor with native keyboard handling, safe-area insets, splash screen, and Apple-compliant account deletion",
+      "Shipped a vibe-coded Lovable web app to the iOS App Store by wrapping it with Capacitor, fixing auth persistence, safe-area handling, and native keyboard behavior",
+      "Integrated RevenueCat for Apple IAP subscriptions (monthly + yearly with 7-day trial) with a platform-aware payment provider abstraction that falls back to Stripe on web",
+      "Built a multi-source entitlement system merging individual Apple IAP, team-based premium via unlock codes, and admin overrides into a single hasPremiumAccess hook",
+      "Designed and implemented the full team plan purchase pipeline — Stripe webhooks, 3 Deno edge functions, 4 PostgreSQL RPCs, roster management with a 15-slot cap enforced at the DB level",
+      "Created Apple-compliant server-side account deletion with role-aware behavior (player data purge vs. coach profile anonymization preserving team integrity)",
+      "Replaced dead-weight onboarding steps, added free/premium gating UX, and built an in-app guided tutorial system with role-specific step sequences",
     ],
     relatedExperienceIds: ["teragram"],
   },
@@ -426,7 +454,7 @@ const projects: Project[] = [
     category: "mobile",
     summary: "Camera-first cannabis social app with dual-camera PIP capture and Metal compositing.",
     description:
-      "I built Rollin' as a ground-up SwiftUI rewrite of a cannabis lifestyle social platform targeting iOS 17+. The centerpiece is a custom dual-camera picture-in-picture capture system using AVCaptureMultiCamSession with real-time Metal-backed CIImage compositing via AVAssetWriter — modeled after Apple's AVMultiCamPiP reference architecture. The app features MVVM with protocol-oriented dependency injection, a comprehensive design system, and a clean Supabase abstraction boundary that isolates all SDK types behind a single protocol.",
+      "Built Rollin' as a ground-up SwiftUI rewrite of a cannabis lifestyle social platform targeting iOS 17+. The centerpiece is a custom dual-camera picture-in-picture capture system using AVCaptureMultiCamSession with real-time Metal-backed CIImage compositing via AVAssetWriter — modeled after Apple's AVMultiCamPiP reference architecture. The app features MVVM with protocol-oriented dependency injection, a comprehensive design system, and a clean Supabase abstraction boundary that isolates all SDK types behind a single protocol.",
     skillIds: [
       "swift",
       "swiftui",
@@ -452,6 +480,9 @@ const projects: Project[] = [
       "Built a protocol-oriented DI container (AppContainer) with a clean Supabase abstraction boundary — only one file in the entire codebase touches the SDK, enabling full testability with fakes",
       "Shipped ~80 Swift files across a layered MVVM architecture with a custom design system (typography, spacing, color tokens, animation curves) and per-environment xcconfig build configurations",
     ],
+    links: [
+      { label: "Live Site", href: "https://rollin-app.com" },
+    ],
     relatedExperienceIds: ["teragram"],
   },
   {
@@ -459,7 +490,13 @@ const projects: Project[] = [
     slug: "redwood",
     title: "Redwood",
     category: "game",
+    coverImage: "/images/projects/redwood/01.jpg",
     summary: "Indie narrative exploration built in Godot celebrating the Redwood forest canopy.",
+    media: [
+      { kind: "image", src: "/images/projects/redwood/01.jpg", alt: "Redwood forest scene with gravestone" },
+      { kind: "image", src: "/images/projects/redwood/02.jpg", alt: "Redwood campsite scene" },
+      { kind: "image", src: "/images/projects/redwood/03.jpg", alt: "Redwood road and vehicle scene" },
+    ],
     skillIds: ["godot", "gdscript", "game-dev", "git", "ui-ux"],
     highlights: [
       "Built exploration game in Godot 4",
@@ -592,7 +629,7 @@ const edges: Edge[] = [
   // Open Planner experience → Open Planner project
   { from: { kind: "experience", id: "open-planner-exp" }, to: { kind: "project", id: "open-planner" }, label: "founded" },
   
-  // Teragram Development experience → SoldierMix, Rollin, and ARMed projects
+  // Teragram Development experience → GhostWriter, Rollin, and ARMED projects
   { from: { kind: "experience", id: "teragram" }, to: { kind: "project", id: "ghostwriter" }, label: "built" },
   { from: { kind: "experience", id: "teragram" }, to: { kind: "project", id: "rollin-app" }, label: "shipped" },
   { from: { kind: "experience", id: "teragram" }, to: { kind: "project", id: "armed" }, label: "shipped" },

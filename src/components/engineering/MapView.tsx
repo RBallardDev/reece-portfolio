@@ -608,7 +608,7 @@ export default function MapView({ onOpenItem }: MapViewProps) {
                 <MobileNode
                   key={proj.id}
                   title={proj.title}
-                  subtitle={proj.category.charAt(0).toUpperCase() + proj.category.slice(1)}
+                  subtitle={proj.categoryLabel ?? proj.category.charAt(0).toUpperCase() + proj.category.slice(1)}
                   onClick={() => onOpenItem("project", proj.id)}
                   relatedNodes={getRelatedNodes("project", proj.id)}
                   onOpenItem={onOpenItem}

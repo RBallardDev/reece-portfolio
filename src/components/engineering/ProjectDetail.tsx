@@ -38,7 +38,8 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
   const experienceItem = !isProject ? (item as Experience) : null;
 
   const typeLabel = isProject
-    ? projectItem!.category.charAt(0).toUpperCase() + projectItem!.category.slice(1)
+    ? projectItem!.categoryLabel ??
+      projectItem!.category.charAt(0).toUpperCase() + projectItem!.category.slice(1)
     : experienceItem!.role;
 
   // Resolve cover image: direct coverImage > first media image
@@ -54,6 +55,7 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
     : [];
 
   const aboutText = item.description ?? item.summary;
+  const isArmedPortraitGallery = isProject && projectItem?.id === "armed";
 
   return (
     <div className="space-y-8">
@@ -88,15 +90,21 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
         )}
       </div>
 
-      {/* Cover image */}
+      {/* Cover image — natural aspect ratio, no cropping */}
       {coverImage && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10">
+        <div
+          className="w-full max-w-[1024px] mx-auto overflow-hidden rounded-xl border border-white/10"
+          style={projectItem?.coverBg ? { backgroundColor: projectItem.coverBg } : undefined}
+        >
           <Image
             src={coverImage}
             alt={`${item.title} cover`}
-            fill
-            className="object-cover"
-            sizes="(min-width: 1024px) 66vw, 100vw"
+            width={1200}
+            height={675}
+            quality={100}
+            unoptimized
+            className="w-full h-auto"
+            sizes="100vw"
             priority
           />
         </div>
@@ -164,19 +172,31 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
       {galleryMedia.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">Gallery</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div
+            className={
+              isArmedPortraitGallery
+                ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
+                : "grid grid-cols-1 md:grid-cols-2 gap-4 max-w-[1024px] mx-auto"
+            }
+          >
             {galleryMedia.map((media, i) => (
               <div
                 key={i}
-                className="relative aspect-video overflow-hidden rounded-lg border border-white/10"
+                className={
+                  isArmedPortraitGallery && media.kind === "image"
+                    ? "relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-[#0f1c2e]"
+                    : "relative aspect-video overflow-hidden rounded-lg border border-white/10"
+                }
               >
                 {media.kind === "image" ? (
                   <Image
                     src={media.src}
                     alt={media.alt ?? `${item.title} gallery ${i + 1}`}
                     fill
-                    className="object-cover"
-                    sizes="(min-width: 1024px) 33vw, 50vw"
+                    quality={100}
+                    unoptimized
+                    className={isArmedPortraitGallery ? "object-contain p-1" : "object-cover"}
+                    sizes="100vw"
                   />
                 ) : (
                   <video

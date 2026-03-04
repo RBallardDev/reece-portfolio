@@ -18,10 +18,25 @@ export default function EngineeringGrid({
   onCardHoverEnd,
   onCardClick,
 }: EngineeringGridProps) {
+  const orderedProjects = projects
+    .map((project, index) => ({ project, index }))
+    .sort((a, b) => {
+      const rank = (id: string) => {
+        if (id === "open-planner") return 0;
+        if (id === "ghostwriter" || id === "rollin-app") return 2;
+        return 1;
+      };
+
+      const rankDiff = rank(a.project.id) - rank(b.project.id);
+      if (rankDiff !== 0) return rankDiff;
+      return a.index - b.index;
+    })
+    .map(({ project }) => project);
+
   if (mode === "projects") {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-        {projects.map((project) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {orderedProjects.map((project) => (
           <motion.div
             key={project.id}
             variants={revealItem}
@@ -31,11 +46,12 @@ export default function EngineeringGrid({
           >
             <EngineeringCard
               title={project.title}
-              type={project.category}
+              type={project.categoryLabel ?? project.category}
               coverImage={
                 project.coverImage ??
                 project.media?.find((m) => m.kind === "image")?.src
               }
+              coverBg={project.coverBg}
               summary={project.summary}
               onHoverStart={() => onCardHoverStart?.(project.skillIds)}
               onHoverEnd={onCardHoverEnd}
@@ -48,7 +64,7 @@ export default function EngineeringGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {experiences.map((experience) => (
         <motion.div
           key={experience.id}

@@ -6,8 +6,9 @@ import Image from "next/image";
 type EngineeringCardProps = {
   title: string;
   type: string;
-  previousType?: string; // For showing promotion (previous role)
+  previousType?: string;
   coverImage?: string;
+  coverBg?: string;
   summary: string;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
@@ -19,6 +20,7 @@ export default function EngineeringCard({
   type,
   previousType,
   coverImage,
+  coverBg,
   summary,
   onHoverStart,
   onHoverEnd,
@@ -46,14 +48,19 @@ export default function EngineeringCard({
     >
       {/* Cover image — only rendered when one exists */}
       {coverImage && (
-        <div className="relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl bg-white/5 aspect-[16/9] sm:aspect-[4/3]">
+        <div
+          className="relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl bg-white/5 aspect-[16/9]"
+          style={coverBg ? { backgroundColor: coverBg } : undefined}
+        >
           <Image
             src={coverImage}
             alt={`${title} cover`}
-            width={800}
-            height={450}
+            width={1200}
+            height={675}
+            quality={100}
+            unoptimized
             className="w-full h-full object-cover"
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            sizes="100vw"
             priority={false}
           />
         </div>
