@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { projects, experiences, skills, type Project, type Experience } from "@/data/engineering";
 
 type ProjectDetailProps = {
@@ -9,7 +10,6 @@ type ProjectDetailProps = {
 };
 
 export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) {
-  // Find the item
   const item: Project | Experience | undefined =
     type === "project"
       ? projects.find((p) => p.id === id)
@@ -29,20 +29,31 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
     );
   }
 
-  // Get skill labels
   const itemSkills = item.skillIds
     .map((sid) => skills.find((s) => s.id === sid)?.label)
     .filter(Boolean);
 
-  // Type-specific fields
   const isProject = type === "project";
   const projectItem = isProject ? (item as Project) : null;
   const experienceItem = !isProject ? (item as Experience) : null;
 
-  // Display type label
   const typeLabel = isProject
     ? projectItem!.category.charAt(0).toUpperCase() + projectItem!.category.slice(1)
     : experienceItem!.role;
+
+  // Resolve cover image: direct coverImage > first media image
+  const coverImage =
+    item.coverImage ??
+    (isProject
+      ? projectItem!.media?.find((m) => m.kind === "image")?.src
+      : undefined);
+
+  // Gallery: all media items beyond the cover
+  const galleryMedia = isProject
+    ? (projectItem!.media ?? []).filter((m) => m.src !== coverImage)
+    : [];
+
+  const aboutText = item.description ?? item.summary;
 
   return (
     <div className="space-y-8">
@@ -70,17 +81,31 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
         {experienceItem?.org && experienceItem.org !== experienceItem.title && (
           <p className="text-white/60">{experienceItem.org}</p>
         )}
+        {experienceItem?.previousRole && (
+          <p className="text-xs text-white/40">
+            Previously: {experienceItem.previousRole}
+          </p>
+        )}
       </div>
 
-      {/* Image placeholder - larger */}
-      <div className="aspect-video w-full rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 text-sm">
-        {isProject ? "Project showcase" : "Experience showcase"} image placeholder
-      </div>
+      {/* Cover image */}
+      {coverImage && (
+        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10">
+          <Image
+            src={coverImage}
+            alt={`${item.title} cover`}
+            fill
+            className="object-cover"
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            priority
+          />
+        </div>
+      )}
 
-      {/* Description */}
+      {/* About */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-white">About</h3>
-        <p className="text-white/70 leading-relaxed">{item.summary}</p>
+        <p className="text-white/70 leading-relaxed">{aboutText}</p>
       </div>
 
       {/* Highlights */}
@@ -98,7 +123,7 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
         </div>
       )}
 
-      {/* Skills/Technologies */}
+      {/* Technologies */}
       {itemSkills.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">Technologies</h3>
@@ -115,8 +140,8 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
         </div>
       )}
 
-      {/* Links */}
-      {item.links && item.links.length > 0 ? (
+      {/* Links — only shown when real links exist */}
+      {item.links && item.links.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">Links</h3>
           <div className="flex flex-wrap gap-4">
@@ -133,34 +158,41 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
             ))}
           </div>
         </div>
-      ) : (
+      )}
+
+      {/* Gallery — only shown when there are media items beyond the cover */}
+      {galleryMedia.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Links</h3>
-          <div className="flex gap-4">
-            <span className="text-white/40 text-sm border border-white/10 rounded-lg px-4 py-2">
-              GitHub (coming soon)
-            </span>
-            <span className="text-white/40 text-sm border border-white/10 rounded-lg px-4 py-2">
-              Live Demo (coming soon)
-            </span>
+          <h3 className="text-lg font-semibold text-white">Gallery</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {galleryMedia.map((media, i) => (
+              <div
+                key={i}
+                className="relative aspect-video overflow-hidden rounded-lg border border-white/10"
+              >
+                {media.kind === "image" ? (
+                  <Image
+                    src={media.src}
+                    alt={media.alt ?? `${item.title} gallery ${i + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 33vw, 50vw"
+                  />
+                ) : (
+                  <video
+                    src={media.src}
+                    className="w-full h-full object-cover"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                  />
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
-
-      {/* Gallery placeholder */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white">Gallery</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="aspect-video rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/30 text-xs"
-            >
-              Image {i}
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

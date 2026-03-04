@@ -44,9 +44,9 @@ export default function EngineeringCard({
       }}
       role="button"
     >
-      {/* Cover image (optional) - flush with card edges */}
-      <div className="relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl bg-white/5 aspect-[16/9] sm:aspect-[4/3]">
-        {coverImage ? (
+      {/* Cover image — only rendered when one exists */}
+      {coverImage && (
+        <div className="relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-xl bg-white/5 aspect-[16/9] sm:aspect-[4/3]">
           <Image
             src={coverImage}
             alt={`${title} cover`}
@@ -56,12 +56,8 @@ export default function EngineeringCard({
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             priority={false}
           />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
-            Image placeholder
-          </div>
-        )}
-      </div>
+        </div>
+      )}
       
       {/* Type label with optional promotion arrow */}
       {hasPromotion ? (

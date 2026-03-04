@@ -33,6 +33,7 @@ export default function EngineeringGrid({
               title={project.title}
               type={project.category}
               coverImage={
+                project.coverImage ??
                 project.media?.find((m) => m.kind === "image")?.src
               }
               summary={project.summary}
