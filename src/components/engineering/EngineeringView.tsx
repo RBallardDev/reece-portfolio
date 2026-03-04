@@ -282,15 +282,18 @@ export default function EngineeringView() {
         )}
       </div>
 
-      {/* Desktop: Split layout with sticky left + scrollable right */}
-      <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-8">
-        {/* Left column - Skills (sticky) */}
-        <div className="space-y-6 sticky top-24 self-start">
-          <h1 className="text-4xl font-bold">Engineering</h1>
-          <div>
-            <h2 className="text-sm uppercase tracking-wider text-white/50 mb-4">
-              Skills
-            </h2>
+      {/* Desktop: Split layout — both columns fill viewport, scroll independently */}
+      <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-8 h-[calc(100vh-7.5rem)]">
+        {/* Left column — fixed title + scrollable skills */}
+        <div className="flex flex-col min-h-0">
+          <h1 className="text-4xl font-bold shrink-0">Engineering</h1>
+          <h2 className="text-sm uppercase tracking-wider text-white/50 mt-6 mb-4 shrink-0">
+            Skills
+          </h2>
+          <div
+            className="overflow-y-auto min-h-0 flex-1 scrollbar-hide"
+            data-lenis-prevent
+          >
             <SkillPills
               activeSkillIds={activeSkillIds}
               activeSkillColors={activeSkillColors}
@@ -298,34 +301,31 @@ export default function EngineeringView() {
           </div>
         </div>
 
-        {/* Right column - Toggle + Grid/Detail */}
-        <div>
-          {/* Toggle row - sticky, aligned with left column */}
-          <div className="sticky top-24 z-10 -mx-6 px-6 before:absolute before:inset-x-0 before:bottom-full before:h-screen before:bg-black">
-            <div className="bg-black pt-2.5 pb-6">
-              <div className="flex items-center justify-end gap-4">
-              {toggleButtons.map((btn) => (
-                <button
-                  key={btn.key}
-                  onClick={() => {
-                    setMode(btn.key);
-                    setSelectedItem(null);
-                  }}
-                  className={`text-sm font-medium transition-colors ${
-                    mode === btn.key
-                      ? "text-white"
-                      : "text-white/60 hover:text-white/90"
-                  }`}
-                >
-                  {btn.label}
-                </button>
-              ))}
-              </div>
-            </div>
+        {/* Right column — fixed toggle + scrollable grid/detail */}
+        <div className="flex flex-col min-h-0">
+          <div className="flex items-center justify-end gap-4 pt-2.5 pb-6 shrink-0">
+            {toggleButtons.map((btn) => (
+              <button
+                key={btn.key}
+                onClick={() => {
+                  setMode(btn.key);
+                  setSelectedItem(null);
+                }}
+                className={`text-sm font-medium transition-colors ${
+                  mode === btn.key
+                    ? "text-white"
+                    : "text-white/60 hover:text-white/90"
+                }`}
+              >
+                {btn.label}
+              </button>
+            ))}
           </div>
 
-          {/* Grid or Detail - with top margin to account for sticky toggle */}
-          <div className="mt-6">
+          <div
+            className="overflow-y-auto min-h-0 flex-1 scrollbar-hide"
+            data-lenis-prevent
+          >
             {selectedItem ? (
               <ProjectDetail
                 id={selectedItem.id}

@@ -20,6 +20,15 @@ html::-webkit-scrollbar {
   height: 0;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: #000;
   color: #fff;
