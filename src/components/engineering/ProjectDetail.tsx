@@ -94,7 +94,11 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
       {coverImage && (
         <div
           className="w-full max-w-[1024px] mx-auto overflow-hidden rounded-xl border border-white/10"
-          style={projectItem?.coverBg ? { backgroundColor: projectItem.coverBg } : undefined}
+          style={
+            (isProject ? projectItem?.coverBg : experienceItem?.coverBg)
+              ? { backgroundColor: isProject ? projectItem!.coverBg : experienceItem!.coverBg }
+              : undefined
+          }
         >
           <Image
             src={coverImage}
@@ -103,7 +107,11 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
             height={675}
             quality={100}
             unoptimized
-            className="w-full h-auto"
+            className={`w-full ${
+              !isProject && experienceItem?.coverContain
+                ? "h-auto max-h-[300px] object-contain p-12"
+                : "h-auto"
+            }`}
             sizes="100vw"
             priority
           />

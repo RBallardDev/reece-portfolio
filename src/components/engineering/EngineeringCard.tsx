@@ -9,6 +9,8 @@ type EngineeringCardProps = {
   previousType?: string;
   coverImage?: string;
   coverBg?: string;
+  coverContain?: boolean;
+  coverOffsetX?: number;
   summary: string;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
@@ -21,6 +23,8 @@ export default function EngineeringCard({
   previousType,
   coverImage,
   coverBg,
+  coverContain,
+  coverOffsetX,
   summary,
   onHoverStart,
   onHoverEnd,
@@ -59,7 +63,8 @@ export default function EngineeringCard({
             height={675}
             quality={100}
             unoptimized
-            className="w-full h-full object-cover"
+            className={`w-full h-full ${coverContain ? "object-contain p-8" : "object-cover"}`}
+            style={coverOffsetX ? { transform: `translateX(${coverOffsetX}px)` } : undefined}
             sizes="100vw"
             priority={false}
           />

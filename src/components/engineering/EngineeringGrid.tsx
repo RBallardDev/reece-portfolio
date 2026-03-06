@@ -42,7 +42,7 @@ export default function EngineeringGrid({
             variants={revealItem}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.1 }}
           >
             <EngineeringCard
               title={project.title}
@@ -71,13 +71,16 @@ export default function EngineeringGrid({
           variants={revealItem}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <EngineeringCard
-            title={experience.title}
+            viewport={{ once: true, amount: 0.1 }}
+          >
+            <EngineeringCard
+              title={experience.title}
             type={experience.role}
             previousType={experience.previousRole}
             coverImage={experience.coverImage}
+            coverBg={experience.coverBg}
+            coverContain={experience.coverContain}
+            coverOffsetX={experience.coverOffsetX}
             summary={experience.summary}
             onHoverStart={() => onCardHoverStart?.(experience.skillIds)}
             onHoverEnd={onCardHoverEnd}
