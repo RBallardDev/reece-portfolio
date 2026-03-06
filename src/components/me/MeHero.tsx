@@ -50,35 +50,37 @@ const Paragraph = ({
       onMouseEnter={isMobile ? undefined : onHoverStart}
       onMouseLeave={isMobile ? undefined : onHoverEnd}
     >
-      I{" "}
+      I&apos;m a full-stack and AI native engineer based in LA and working remote. I{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(0)}>
         build
       </span>{" "}
-      things because I genuinely can&apos;t stop. What started as a pivot from a career-ending basketball injury became a full-blown{" "}
+      web apps, mobile apps, internal tools, and AI-powered products{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(1)}>
-        obsession
-      </span>
-      . I skip plans, lose sleep, and spend hours chasing the smallest{" "}
+        end-to-end
+      </span>{" "}
+      — UI/UX, database architecture, integrations, deployment, all of it. My main stack is React, Next.js, and TypeScript on the frontend, Python, Node.js, and Supabase on the backend, and SwiftUI and React Native for mobile.
+      <br /><br />
+      I&apos;ve{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(2)}>
-        details
+        shipped
       </span>{" "}
-      — not because I have to, but because I love the process. I&apos;ll{" "}
+      platforms used by over{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(3)}>
-        ship
+        20,000
       </span>{" "}
-      a complete app in weeks if that&apos;s what the moment demands. I work across mobile, web, backend, AI — honestly any{" "}
+      people, turned clients&apos;{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(4)}>
-        system
+        vibecoded
       </span>{" "}
-      I can get my hands on. My creative hobbies keep me sharp and my athlete mentality keeps me{" "}
+      apps into scalable production-ready products, designed recommendation engines, and founded my own product development company. I work fast, I care about{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(5)}>
-        relentless
+        details
       </span>
-      . I just want to build things that feel perfect and be the best{" "}
+      , and I&apos;m at my best with a full night of sleep and a cup of{" "}
       <span className={`${emphasized} transition-all duration-700`} style={wordStyle(6)}>
-        teammate
-      </span>{" "}
-      in the room.
+        coffee
+      </span>
+      !
     </p>
   );
 };
