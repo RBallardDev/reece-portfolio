@@ -193,23 +193,36 @@ export default function ProjectDetail({ id, type, onBack }: ProjectDetailProps) 
                 className={
                   isArmedPortraitGallery && media.kind === "image"
                     ? "relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-[#0f1c2e]"
-                    : "relative aspect-video overflow-hidden rounded-lg border border-white/10"
+                    : "overflow-hidden rounded-lg border border-white/10"
                 }
               >
                 {media.kind === "image" ? (
-                  <Image
-                    src={media.src}
-                    alt={media.alt ?? `${item.title} gallery ${i + 1}`}
-                    fill
-                    quality={100}
-                    unoptimized
-                    className={isArmedPortraitGallery ? "object-contain p-1" : "object-cover"}
-                    sizes="100vw"
-                  />
+                  isArmedPortraitGallery ? (
+                    <Image
+                      src={media.src}
+                      alt={media.alt ?? `${item.title} gallery ${i + 1}`}
+                      fill
+                      quality={100}
+                      unoptimized
+                      className="object-contain p-1"
+                      sizes="100vw"
+                    />
+                  ) : (
+                    <Image
+                      src={media.src}
+                      alt={media.alt ?? `${item.title} gallery ${i + 1}`}
+                      width={media.width ?? 1200}
+                      height={media.height ?? 900}
+                      quality={100}
+                      unoptimized
+                      className="h-auto w-full"
+                      sizes="100vw"
+                    />
+                  )
                 ) : (
                   <video
                     src={media.src}
-                    className="w-full h-full object-cover"
+                    className="h-auto w-full"
                     muted
                     playsInline
                     loop

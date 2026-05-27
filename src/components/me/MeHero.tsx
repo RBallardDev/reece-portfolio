@@ -282,7 +282,7 @@ export default function MeHero() {
             />
           </div>
           <p className="text-xs text-white/50 text-left italic">
-            New York City — East Village (2025) | Fun fact: eel rolls are my favorite.
+            New York City — East Village (2025) | Shot by Nicole Lenzen | Fun fact: eel rolls are my favorite.
           </p>
         </div>
 

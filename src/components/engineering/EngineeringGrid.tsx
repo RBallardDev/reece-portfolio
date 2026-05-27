@@ -22,9 +22,10 @@ export default function EngineeringGrid({
     .map((project, index) => ({ project, index }))
     .sort((a, b) => {
       const rank = (id: string) => {
-        if (id === "open-planner") return 0;
-        if (id === "ghostwriter" || id === "rollin-app") return 2;
-        return 1;
+        if (id === "rollin-app") return 0;
+        if (id === "open-planner") return 1;
+        if (id === "ghostwriter") return 3;
+        return 2;
       };
 
       const rankDiff = rank(a.project.id) - rank(b.project.id);
@@ -71,10 +72,10 @@ export default function EngineeringGrid({
           variants={revealItem}
           initial="hidden"
           whileInView="show"
-            viewport={{ once: true, amount: 0.1 }}
-          >
-            <EngineeringCard
-              title={experience.title}
+          viewport={{ once: true, amount: 0.1 }}
+        >
+          <EngineeringCard
+            title={experience.title}
             type={experience.role}
             previousType={experience.previousRole}
             coverImage={experience.coverImage}

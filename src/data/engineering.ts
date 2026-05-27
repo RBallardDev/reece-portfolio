@@ -24,6 +24,8 @@ export type Media = {
   kind: "image" | "video";
   src: string;
   alt?: string;
+  width?: number;
+  height?: number;
 };
 
 export type ProjectCategory = "web" | "mobile" | "ml" | "game" | "tool";
@@ -455,9 +457,23 @@ const projects: Project[] = [
     slug: "rollin-app",
     title: "Rollin'",
     category: "mobile",
+    coverImage: "/images/projects/rollin/cover.png",
     summary: "Camera-first cannabis social app with dual-camera PIP capture and Metal compositing.",
     description:
       "Built Rollin' as a ground-up SwiftUI rewrite of a cannabis lifestyle social platform targeting iOS 17+. The centerpiece is a custom dual-camera picture-in-picture capture system using AVCaptureMultiCamSession with real-time Metal-backed CIImage compositing via AVAssetWriter — modeled after Apple's AVMultiCamPiP reference architecture. The app features MVVM with protocol-oriented dependency injection, a comprehensive design system, and a clean Supabase abstraction boundary that isolates all SDK types behind a single protocol.",
+    media: [
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.25.59 PM.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.30.33 PM.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.30.36 PM-2.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.31.11 PM.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.31.14 PM-2.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.31.52 PM.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.31.57 PM-2.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.31.59 PM-3.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.32.47 PM.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.32.49 PM-2.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+      { kind: "image", src: "/images/projects/rollin/Screenshot 2026-05-27 at 12.33.45 PM.png", alt: "Rollin app screenshot", width: 1320, height: 2868 },
+    ],
     skillIds: [
       "swift",
       "swiftui",
