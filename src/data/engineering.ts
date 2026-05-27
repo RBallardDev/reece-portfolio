@@ -616,7 +616,10 @@ const experiences: Experience[] = [
     title: "Teragram Development",
     org: "Teragram Development",
     role: "Full-Stack / ML Engineer",
-    timeframe: "2021 – Present",
+    coverImage: "/images/experiences/teragram/logo.jpg",
+    coverBg: "#FFFFFF",
+    coverContain: true,
+    timeframe: "2025 – Present",
     summary: "Building web, mobile, and ML applications across multiple domains.",
     skillIds: [
       "typescript",
