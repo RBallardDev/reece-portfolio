@@ -20,7 +20,7 @@ const photos = [
   { src: "/images/me/eating2.jpg", alt: "Reece eating sushi (2)" },
 ];
 
-const HIGHLIGHT_COUNT = 10;
+const HIGHLIGHT_COUNT = 12;
 
 // Transition duration in ms (matches CSS duration-700)
 const FADE_DURATION = 1200;
@@ -46,7 +46,6 @@ const Paragraph = ({
     } as React.CSSProperties;
   };
 
-  /* --- 34-highlight version (all buzzwords) ---
   return (
     <p
       className={`text-4xl leading-tight ${muted}`}
@@ -54,107 +53,55 @@ const Paragraph = ({
       onMouseLeave={isMobile ? undefined : onHoverEnd}
     >
       I&apos;m a{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(0)}>full-stack</span>
-      {" "}and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(1)}>AI native</span>
-      {" "}engineer based in LA and working remote. I{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(2)}>build</span>
-      {" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(3)}>web</span>
-      {" "}apps,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(4)}>mobile</span>
-      {" "}apps,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(5)}>internal tools</span>
-      , and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(6)}>AI-powered</span>
-      {" "}products{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(7)}>end-to-end</span>
-      {" "}&mdash;{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(8)}>UI/UX</span>
-      ,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(9)}>database architecture</span>
-      ,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(10)}>integrations</span>
-      ,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(11)}>deployment</span>
-      , all of it. My main stack is{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(12)}>React</span>
-      ,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(13)}>Next.js</span>
-      , and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(14)}>TypeScript</span>
-      {" "}on the{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(15)}>frontend</span>
-      ,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(16)}>Python</span>
-      ,{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(17)}>Node.js</span>
-      , and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(18)}>Supabase</span>
-      {" "}on the{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(19)}>backend</span>
-      , and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(20)}>SwiftUI</span>
-      {" "}and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(21)}>React Native</span>
-      {" "}for{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(22)}>mobile</span>
-      .
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(0)}>
+        mobile-first full-stack and AI-native engineer
+      </span>{" "}
+      based in LA and working remote. These days, my focus is on building polished mobile apps,
+      especially iOS experiences with{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(1)}>
+        Swift and SwiftUI
+      </span>
+      , along with cross-platform apps using{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(2)}>
+        React Native and Expo
+      </span>
+      . I also handle the full stack behind them:{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(3)}>
+        backend architecture, databases, auth, integrations, deployment, and AI-powered features.
+      </span>{" "}
+      My broader toolkit includes{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(4)}>
+        React, Next.js, TypeScript, Python, Node.js, Supabase, AWS, Elastic Beanstalk, and EC2
+      </span>
+      , so I can take a product from idea to production across mobile, web, backend, and cloud infrastructure.
       <br /><br />
-      I&apos;ve{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(23)}>shipped</span>
-      {" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(24)}>platforms</span>
-      {" "}used by over{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(25)}>20,000</span>
-      {" "}people, turned clients&apos;{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(26)}>vibecoded</span>
-      {" "}apps into scalable{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(27)}>production-ready</span>
-      {" "}products, designed{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(28)}>recommendation engines</span>
+      I&apos;ve shipped platforms used by over{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(5)}>
+        20,000 people
+      </span>
+      , turned{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(6)}>
+        clients&apos; vibe-coded apps into scalable production-ready products
+      </span>
+      , designed recommendation engines, and{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(7)}>
+        founded
+      </span>{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(8)}>
+        my own product development company
+      </span>
+      . I{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(9)}>
+        work fast
+      </span>
+      , really care about the{" "}
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(10)}>
+        tiny details
+      </span>
       , and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(29)}>founded</span>
-      {" "}my own product development company. I work{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(30)}>fast</span>
-      , I care about{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(31)}>details</span>
-      , and I&apos;m at my best with a{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(32)}>full night of sleep</span>
-      {" "}and a{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(33)}>cup of coffee!</span>
-    </p>
-  );
-  --- end 34-highlight version --- */
-
-  return (
-    <p
-      className={`text-4xl leading-tight ${muted}`}
-      onMouseEnter={isMobile ? undefined : onHoverStart}
-      onMouseLeave={isMobile ? undefined : onHoverEnd}
-    >
-      I&apos;m a{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(0)}>full-stack</span>
-      {" "}and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(1)}>AI native</span>
-      {" "}engineer based in LA and working remote. I{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(2)}>build</span>
-      {" "}web apps, mobile apps, internal tools, and AI-powered products{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(3)}>end-to-end</span>
-      {" "}&mdash; UI/UX, database architecture, integrations, deployment, all of it. My main stack is React, Next.js, and TypeScript on the frontend, Python, Node.js, and Supabase on the backend, and SwiftUI and React Native for mobile.
-      <br /><br />
-      I&apos;ve{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(4)}>shipped</span>
-      {" "}platforms used by over{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(5)}>20,000</span>
-      {" "}people, turned clients&apos;{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(6)}>vibecoded</span>
-      {" "}apps into scalable production-ready products, designed recommendation engines, and{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(7)}>founded</span>
-      {" "}my own product development company. I work fast, I care about{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(8)}>details</span>
-      , and I&apos;m at my best with a full night of sleep and a{" "}
-      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(9)}>cup of coffee!</span>
+      <span className={`${emphasized} transition-all duration-700`} style={wordStyle(11)}>
+        I&apos;m at my best with a full night of sleep and a cup of coffee!
+      </span>
     </p>
   );
 };
@@ -282,7 +229,7 @@ export default function MeHero() {
             />
           </div>
           <p className="text-xs text-white/50 text-left italic">
-            New York City — East Village (2025) | Shot by Nicole Lenzen | Fun fact: eel rolls are my favorite.
+            New York City — East Village (2025) | Fun fact: eel rolls are my favorite.
           </p>
         </div>
 
